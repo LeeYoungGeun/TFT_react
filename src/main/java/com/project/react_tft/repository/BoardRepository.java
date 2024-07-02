@@ -1,0 +1,10 @@
+package com.project.react_tft.repository;
+
+
+import com.project.react_tft.domain.Board;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface BoardRepository extends JpaRepository<Board, Long> {
+
+
+}
