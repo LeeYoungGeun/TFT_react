@@ -2,6 +2,7 @@ package com.project.react_tft.config;
 
 
 import com.project.react_tft.security.filter.LoginFilter;
+import com.project.react_tft.security.filter.TokenCheckFilter;
 import com.project.react_tft.security.filter.handler.UserLoginSuccessHandler;
 import com.project.react_tft.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
@@ -93,7 +94,7 @@ public class CustomSecurityConfig {
 
 
 
-        http.addFilterBefore(loginFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(tokenCheckFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
 
 
@@ -133,6 +134,10 @@ public class CustomSecurityConfig {
         JdbcTokenRepositoryImpl repo = new JdbcTokenRepositoryImpl();
         repo.setDataSource(dataSource);
         return repo;
+    }
+
+    private TokenCheckFilter tokenCheckFilter(JWTUtil jwtUtil){
+        return new TokenCheckFilter(jwtUtil);
     }
 
 
