@@ -3,6 +3,7 @@ package com.project.react_tft.config;
 
 import com.project.react_tft.security.filter.LoginFilter;
 import com.project.react_tft.security.filter.handler.UserLoginSuccessHandler;
+import com.project.react_tft.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -38,6 +39,7 @@ public class CustomSecurityConfig {
     private final DataSource dataSource;
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
+    private final JWTUtil jwtUtil;
 
 
     @Bean
@@ -83,7 +85,7 @@ public class CustomSecurityConfig {
         loginFilter.setAuthenticationManager(authenticationManager);
 
         //API Login SuccessHandler
-        UserLoginSuccessHandler successHandler = new UserLoginSuccessHandler();
+        UserLoginSuccessHandler successHandler = new UserLoginSuccessHandler(jwtUtil);
         //SuccessHandler 세팅
         loginFilter.setAuthenticationSuccessHandler(successHandler);
 

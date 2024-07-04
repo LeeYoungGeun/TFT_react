@@ -2,7 +2,7 @@ package com.project.react_tft.util;
 
 import io.jsonwebtoken.JwtException;
 
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +32,7 @@ public class JWTUtil {
         payloads.putAll(valueMap);
 
         //유효시간.  토큰 생성시간.
-        int time = (60 * 24) * days; //시간설정. 60 * 24 는 하루
+        int time = (60 * 24 ) * days; //시간설정. 60 * 24 는 하루
 
         String jwtStr = Jwts.builder()
                 .setHeader(headers)
@@ -48,6 +48,11 @@ public class JWTUtil {
 
     public Map<String, Object> validateToken(String token)throws JwtException {
         Map<String, Object> claims = null;
+
+         claims = Jwts.parser()
+                .setSigningKey(key.getBytes()).build()  // 서명 검증을 위한 키 설정
+                .parseSignedClaims(token)               // 토큰 파싱 및 클레임 추출
+                .getBody();
 
         return claims;
     }
