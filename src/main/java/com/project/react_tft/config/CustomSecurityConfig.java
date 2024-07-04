@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -23,10 +24,15 @@ public class CustomSecurityConfig {
     public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
         log.info("------------------------ configure ----------------------------------");
 
-        //CORS 설정 적용
-        http.cors(httpSecurityCorsConfigurer -> {
-            httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource());
-        });
+        http
+                .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화
+                .authorizeHttpRequests(authorize -> authorize
+//                        .requestMatchers( "/api/auth/**").permitAll() // 인증 없이 접근 가능 경로 설정
+//                        .requestMatchers("/swagger-ui/**").permitAll()
+//                        .requestMatchers("/v3/api-docs/**").permitAll()
+
+                                .anyRequest().permitAll()   //모든 권한 해제
+                );
 
         return http.build();
     }
