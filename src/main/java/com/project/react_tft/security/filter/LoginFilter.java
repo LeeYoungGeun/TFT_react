@@ -38,15 +38,14 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken
                 (jsonData.get("mid"), jsonData.get("mpw"));
 
-        if (jsonData.get("mid") == null || jsonData.get("mid").isEmpty()) {
-            throw new AuthenticationServiceException("아이디가 없는데요");
-        }
-        if (jsonData.get("mpw") == null || jsonData.get("mpw").isEmpty()) {
-            throw new AuthenticationServiceException("패스워드가 다른데요");
-        }
+        log.info(jsonData + "jsonDatajsonDatajsonDatajsonDatajsonData");
+
+
+
 
         return getAuthenticationManager().authenticate(authenticationToken);
     }
+
 
     // 요청의 JSON 데이터를 파싱하여 Map<String, String> 형태로 반환
     private Map<String, String> parseRequestJSON(HttpServletRequest request) {

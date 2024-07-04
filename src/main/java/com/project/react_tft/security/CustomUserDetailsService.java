@@ -3,6 +3,7 @@ package com.project.react_tft.security;
 import com.project.react_tft.Repository.MemberRepository;
 import com.project.react_tft.domain.Member;
 import com.project.react_tft.dto.MemberSecurityDTO;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 @Log4j2
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
