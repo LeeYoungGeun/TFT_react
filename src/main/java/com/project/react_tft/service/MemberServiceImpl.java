@@ -32,6 +32,10 @@ public class MemberServiceImpl implements MemberService {
             log.info("이미 있는 아이디인데요.");
             throw new MemberMidExistException();
         }
+        if (memberRepository.existsByMemail(dto.getMemail())){
+            log.info("이미 있는 이메일인데요");
+            throw new MemberMidExistException();
+        }
 
         if(!mpw.equals(chekcmpw)) {
             log.info("비밀번호가 노일치");
