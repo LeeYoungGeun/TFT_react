@@ -1,8 +1,8 @@
 package com.project.react_tft.config;
 
-
 import com.project.react_tft.security.CustomUserDetailsService;
 import com.project.react_tft.security.filter.LoginFilter;
+import com.project.react_tft.security.filter.RefreshTokenFilter;
 import com.project.react_tft.security.filter.TokenCheckFilter;
 import com.project.react_tft.security.filter.handler.UserLoginSuccessHandler;
 import com.project.react_tft.util.JWTUtil;
@@ -28,7 +28,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-
 import javax.sql.DataSource;
 import java.util.Arrays;
 
@@ -44,31 +43,25 @@ public class CustomSecurityConfig {
     private final JWTUtil jwtUtil;
     private final CustomUserDetailsService customUserDetailsService;
 
-
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         log.info("---------------web configure-------------------");
         return (web -> web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations()));
     }
 
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         log.info("---------------------------configure-------------------------------");
 
-
         http
                 .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화
                 .authorizeHttpRequests(authorize -> authorize
-//                        .requestMatchers( "/api/auth/**").permitAll() // 인증 없이 접근 가능 경로 설정
-//                        .requestMatchers("/swagger-ui/**").permitAll()
-//                        .requestMatchers("/v3/api-docs/**").permitAll()
-                          .anyRequest().permitAll()   //모든 권한 해제
-                ).sessionManagement(httpSecuritySessionManagementConfigurer ->      //세션 비활성화
-                        httpSecuritySessionManagementConfigurer.sessionCreationPolicy(
-                                SessionCreationPolicy.STATELESS
-                        ));
-
+                        .requestMatchers("/api/auth/**").permitAll() // 인증 없이 접근 가능 경로 설정
+                        .anyRequest().authenticated() // 다른 모든 요청은 인증 필요
+                )
+                .sessionManagement(httpSecuritySessionManagementConfigurer -> // 세션 비활성화
+                        httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                );
 
         // AuthenticationManager 설정
         AuthenticationManagerBuilder authenticationManagerBuilder =
@@ -78,41 +71,33 @@ public class CustomSecurityConfig {
                 .userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder);
 
-        // 인증 매니저 등록...
+        // 인증 매니저 등록
         AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
         http.authenticationManager(authenticationManager);
 
-        // LoginFilter 설정....
-        LoginFilter loginFilter = new LoginFilter("/generateToken");
+        // LoginFilter 설정
+        LoginFilter loginFilter = new LoginFilter("/api/auth/login");
         loginFilter.setAuthenticationManager(authenticationManager);
 
-        //API Login SuccessHandler
+        // API Login SuccessHandler 설정
         UserLoginSuccessHandler successHandler = new UserLoginSuccessHandler(jwtUtil);
-        //SuccessHandler 세팅
         loginFilter.setAuthenticationSuccessHandler(successHandler);
 
+        http.addFilterBefore(loginFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(tokenCheckFilter(jwtUtil, customUserDetailsService), UsernamePasswordAuthenticationFilter.class);
 
-
-
-
-
-
+        // CORS 설정
         http.cors(httpSecurityCorsConfigurer -> {
             httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource());
         });
 
-        http.addFilterBefore(tokenCheckFilter(jwtUtil, customUserDetailsService), UsernamePasswordAuthenticationFilter.class);
-
-        // remember-me설정
+        // Remember-me 설정
         http.rememberMe(httpSecurityRememberMeConfigurer -> {
             httpSecurityRememberMeConfigurer.key("12345678")
                     .tokenRepository(persistentTokenRepository())
-                    .userDetailsService(userDetailsService)      //PasswordEncoder 에 의한 순환 구조가 발생할 수 있다.
+                    .userDetailsService(userDetailsService)
                     .tokenValiditySeconds(60 * 60 * 24 * 30);
         });
-
-
-
 
         return http.build();
     }
@@ -121,17 +106,14 @@ public class CustomSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        // 접근할 URL을 지정하여 처리... "*" 는 모든 주소로의 접근 허용. 대상 지정하면 지정 대상만 접근 가능...
         corsConfiguration.setAllowedOriginPatterns(Arrays.asList("*"));
-        corsConfiguration.setAllowedMethods(Arrays.asList("HEAD","GET","POST","PUT","DELETE"));
-        corsConfiguration.setAllowedHeaders(Arrays.asList("Authorization","Cache-Control","Content-Type"));
+        corsConfiguration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE"));
+        corsConfiguration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
         corsConfiguration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration);  // "/**" - 하위 모든 폴더.....
+        source.registerCorsConfiguration("/**", corsConfiguration);
         return source;
     }
-
-
 
     @Bean
     public PersistentTokenRepository persistentTokenRepository() {
@@ -140,10 +122,7 @@ public class CustomSecurityConfig {
         return repo;
     }
 
-    private TokenCheckFilter tokenCheckFilter(JWTUtil jwtUtil,CustomUserDetailsService customUserDetailsService){
-        return new TokenCheckFilter(jwtUtil,customUserDetailsService);
+    private TokenCheckFilter tokenCheckFilter(JWTUtil jwtUtil, CustomUserDetailsService customUserDetailsService) {
+        return new TokenCheckFilter(jwtUtil, customUserDetailsService);
     }
-
-
-
 }
