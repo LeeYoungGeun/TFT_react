@@ -1,6 +1,7 @@
 package com.project.react_tft.config;
 
 
+import com.project.react_tft.security.CustomUserDetailsService;
 import com.project.react_tft.security.filter.LoginFilter;
 import com.project.react_tft.security.filter.TokenCheckFilter;
 import com.project.react_tft.security.filter.handler.UserLoginSuccessHandler;
@@ -41,6 +42,7 @@ public class CustomSecurityConfig {
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
     private final JWTUtil jwtUtil;
+    private final CustomUserDetailsService customUserDetailsService;
 
 
     @Bean
@@ -65,8 +67,7 @@ public class CustomSecurityConfig {
                 ).sessionManagement(httpSecuritySessionManagementConfigurer ->      //세션 비활성화
                         httpSecuritySessionManagementConfigurer.sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS
-                        ))
-        ;
+                        ));
 
 
         // AuthenticationManager 설정
@@ -94,10 +95,13 @@ public class CustomSecurityConfig {
 
 
 
-        http.addFilterBefore(tokenCheckFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
 
+        http.cors(httpSecurityCorsConfigurer -> {
+            httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource());
+        });
 
+        http.addFilterBefore(tokenCheckFilter(jwtUtil, customUserDetailsService), UsernamePasswordAuthenticationFilter.class);
 
         // remember-me설정
         http.rememberMe(httpSecurityRememberMeConfigurer -> {
@@ -136,8 +140,8 @@ public class CustomSecurityConfig {
         return repo;
     }
 
-    private TokenCheckFilter tokenCheckFilter(JWTUtil jwtUtil){
-        return new TokenCheckFilter(jwtUtil);
+    private TokenCheckFilter tokenCheckFilter(JWTUtil jwtUtil,CustomUserDetailsService customUserDetailsService){
+        return new TokenCheckFilter(jwtUtil,customUserDetailsService);
     }
 
 

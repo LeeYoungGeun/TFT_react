@@ -38,4 +38,5 @@ public class SwaggerConfig {
                         .description("Test SwaggerUI application")
                         .version("v0.0.1"));
     }
+
 }
