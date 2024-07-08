@@ -1,5 +1,7 @@
 package com.project.react_tft.config;
 
+import com.project.react_tft.security.CustomOAuth2UserService;
+import com.project.react_tft.security.CustomSocialLoginSuccessHandler;
 import com.project.react_tft.security.CustomUserDetailsService;
 import com.project.react_tft.security.filter.LoginFilter;
 import com.project.react_tft.security.filter.RefreshTokenFilter;
@@ -21,6 +23,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
@@ -42,6 +45,7 @@ public class CustomSecurityConfig {
     private final PasswordEncoder passwordEncoder;
     private final JWTUtil jwtUtil;
     private final CustomUserDetailsService customUserDetailsService;
+    private final CustomOAuth2UserService customOAuth2UserService;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -99,7 +103,22 @@ public class CustomSecurityConfig {
                     .tokenValiditySeconds(60 * 60 * 24 * 30);
         });
 
+        // 소셜 로그인 설정
+        http.oauth2Login(httpSecurityOAuth2LoginConfigurer -> {
+            httpSecurityOAuth2LoginConfigurer.loginPage("/api/auth/login");
+            httpSecurityOAuth2LoginConfigurer.successHandler(authenticationSuccessHandler());
+            httpSecurityOAuth2LoginConfigurer.userInfoEndpoint(userInfoEndpointConfig ->
+                    userInfoEndpointConfig.userService(customOAuth2UserService)
+            );
+        });
+
         return http.build();
+    }
+
+    @Bean
+    public AuthenticationSuccessHandler authenticationSuccessHandler(){
+        return new CustomSocialLoginSuccessHandler(passwordEncoder, jwtUtil);
+
     }
 
     // CORS 필터 Bean 설정

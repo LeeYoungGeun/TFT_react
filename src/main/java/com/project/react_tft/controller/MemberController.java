@@ -2,6 +2,7 @@ package com.project.react_tft.controller;
 
 import com.project.react_tft.domain.Member;
 import com.project.react_tft.dto.MemberDTO;
+import com.project.react_tft.security.CustomOAuth2UserService;
 import com.project.react_tft.security.CustomUserDetailsService;
 import com.project.react_tft.service.MemberService;
 import com.project.react_tft.util.JWTUtil;
@@ -13,6 +14,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -27,6 +32,8 @@ public class MemberController {
     private final MemberService memberService;
     private final CustomUserDetailsService customUserDetailsService;
     private final JWTUtil jwtUtil;
+
+
 
     @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/signUp")
@@ -71,4 +78,8 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("아이디 및 비밀번호 오류임.");
         }
     }
+
+
+
 }
+
