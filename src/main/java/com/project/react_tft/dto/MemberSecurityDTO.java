@@ -25,6 +25,8 @@ public class MemberSecurityDTO extends User implements OAuth2User {
 
     private boolean social;
 
+    private String token;
+
     private Map<String, Object> props; //소셜 로그인 정보
 
     public MemberSecurityDTO(String username, String password,String memail, boolean del, boolean social,

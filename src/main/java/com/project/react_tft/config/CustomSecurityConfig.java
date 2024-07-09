@@ -1,10 +1,9 @@
 package com.project.react_tft.config;
 
-import com.project.react_tft.security.CustomOAuth2UserService;
+
 import com.project.react_tft.security.CustomSocialLoginSuccessHandler;
 import com.project.react_tft.security.CustomUserDetailsService;
 import com.project.react_tft.security.filter.LoginFilter;
-import com.project.react_tft.security.filter.RefreshTokenFilter;
 import com.project.react_tft.security.filter.TokenCheckFilter;
 import com.project.react_tft.security.filter.handler.UserLoginSuccessHandler;
 import com.project.react_tft.util.JWTUtil;
@@ -45,7 +44,6 @@ public class CustomSecurityConfig {
     private final PasswordEncoder passwordEncoder;
     private final JWTUtil jwtUtil;
     private final CustomUserDetailsService customUserDetailsService;
-    private final CustomOAuth2UserService customOAuth2UserService;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -61,7 +59,7 @@ public class CustomSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/auth/**").permitAll() // 인증 없이 접근 가능 경로 설정
-                        .anyRequest().authenticated() // 다른 모든 요청은 인증 필요
+                        .anyRequest().permitAll() // 다른 모든 요청은 인증 필요
                 )
                 .sessionManagement(httpSecuritySessionManagementConfigurer -> // 세션 비활성화
                         httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -83,6 +81,13 @@ public class CustomSecurityConfig {
         LoginFilter loginFilter = new LoginFilter("/api/auth/login");
         loginFilter.setAuthenticationManager(authenticationManager);
 
+
+        //소셜
+        http.oauth2Login(httpSecurityOAuth2LoginConfigurer -> {
+            httpSecurityOAuth2LoginConfigurer.loginPage("/api/auth/login");
+            httpSecurityOAuth2LoginConfigurer.successHandler(authenticationSuccessHandler());
+        });
+
         // API Login SuccessHandler 설정
         UserLoginSuccessHandler successHandler = new UserLoginSuccessHandler(jwtUtil);
         loginFilter.setAuthenticationSuccessHandler(successHandler);
@@ -103,23 +108,12 @@ public class CustomSecurityConfig {
                     .tokenValiditySeconds(60 * 60 * 24 * 30);
         });
 
-        // 소셜 로그인 설정
-        http.oauth2Login(httpSecurityOAuth2LoginConfigurer -> {
-            httpSecurityOAuth2LoginConfigurer.loginPage("/api/auth/login");
-            httpSecurityOAuth2LoginConfigurer.successHandler(authenticationSuccessHandler());
-            httpSecurityOAuth2LoginConfigurer.userInfoEndpoint(userInfoEndpointConfig ->
-                    userInfoEndpointConfig.userService(customOAuth2UserService)
-            );
-        });
+
 
         return http.build();
     }
 
-    @Bean
-    public AuthenticationSuccessHandler authenticationSuccessHandler(){
-        return new CustomSocialLoginSuccessHandler(passwordEncoder, jwtUtil);
 
-    }
 
     // CORS 필터 Bean 설정
     @Bean
@@ -132,6 +126,12 @@ public class CustomSecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);
         return source;
+    }
+
+    @Bean
+    public AuthenticationSuccessHandler authenticationSuccessHandler(){
+        return new CustomSocialLoginSuccessHandler(passwordEncoder);
+
     }
 
     @Bean
