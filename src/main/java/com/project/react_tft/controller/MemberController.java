@@ -5,6 +5,8 @@ import com.project.react_tft.dto.MemberDTO;
 import com.project.react_tft.security.CustomUserDetailsService;
 import com.project.react_tft.service.MemberService;
 import com.project.react_tft.util.JWTUtil;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -27,6 +29,8 @@ public class MemberController {
     private final MemberService memberService;
     private final CustomUserDetailsService customUserDetailsService;
     private final JWTUtil jwtUtil;
+
+
 
     @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/signUp")
@@ -71,4 +75,9 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("아이디 및 비밀번호 오류임.");
         }
     }
+
+
+
+
 }
+
