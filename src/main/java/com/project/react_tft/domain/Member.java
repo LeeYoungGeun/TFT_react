@@ -46,4 +46,9 @@ public class Member extends BaseEntity {
         this.roleSet.add(role);
     }
 
+    //삭제 여부(유저가 계정탈퇴를 원할시 바로삭제하지 않게)
+    public void changeDel(boolean del) {
+        this.del = del;
+    }
+
 }

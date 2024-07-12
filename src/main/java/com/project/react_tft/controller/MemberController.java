@@ -12,6 +12,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -76,7 +77,43 @@ public class MemberController {
         }
     }
 
+    @GetMapping("/modify")
+    public ResponseEntity<Member> modify() {
+        log.info("modify..........................");
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+        log.info(principal);
+        log.info(authentication.getName());
+        log.info(authentication.getAuthorities());
+
+        Member detail = memberService.getDetail(authentication.getName());
+        log.info(detail);
+
+        return ResponseEntity.ok(detail);
+    }
+
+
+    @PutMapping("/modify")
+    public ResponseEntity<String> modifyPost(@RequestBody MemberDTO dto) {
+        log.info("modifyPost..........................");
+        log.info("memberJoinDTO.........................." + dto);
+
+        memberService.modify(dto);
+
+        return ResponseEntity.ok("수정성공했음.");
+    }
+
+    @DeleteMapping("/remove")
+    public ResponseEntity<?> remove(@RequestBody MemberDTO dto) {
+        String mid = dto.getMid();
+
+        log.info("삭제삭제삭제삭제삭제");
+        log.info("삭제된 아이디 : " + dto);
+        memberService.remove(mid);
+
+        return ResponseEntity.ok("삭제성공했음.");
+    }
 
 
 }
