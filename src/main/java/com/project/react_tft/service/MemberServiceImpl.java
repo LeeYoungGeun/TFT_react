@@ -79,8 +79,20 @@ public class MemberServiceImpl implements MemberService {
         Optional<Member> optionalMember = memberRepository.findById(memberDTO.getMid());
         if (optionalMember.isPresent()) {
             Member member = optionalMember.get();
+
+            // 기존 비밀번호를 임시로 저장
+            String existingPassword = member.getMpw();
+
+            // DTO의 데이터를 엔티티에 매핑
             modelMapper.map(memberDTO, member);
-            member.setMpw(passwordEncoder.encode(memberDTO.getMpw()));
+
+            // 비밀번호가 비어 있거나 기존 비밀번호와 같으면 기존 비밀번호 유지
+            if (memberDTO.getMpw() == null || memberDTO.getMpw().isEmpty() || passwordEncoder.matches(memberDTO.getMpw(), existingPassword)) {
+                member.setMpw(existingPassword);
+            } else {
+                // 새 비밀번호를 인코딩하여 저장
+                member.setMpw(passwordEncoder.encode(memberDTO.getMpw()));
+            }
 
             log.info("회원정보를 수정했음 ->" + member);
 
