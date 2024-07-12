@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -13,9 +14,13 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@ToString(exclude = "roleSet")
-@Table(name="Member")
+@ToString
+@Table
 public class Member extends BaseEntity {
+
+    @OneToMany
+    @ToString.Exclude
+    private List<Review> reviews;
 
     @Id
     private String mid;
@@ -27,9 +32,9 @@ public class Member extends BaseEntity {
     private boolean del;
     private boolean social;
 
-
     @ElementCollection(fetch = FetchType.LAZY)
     @Builder.Default
+    @ToString.Exclude
     private Set<MemberRole> roleSet = new HashSet<>();
 
     public Member(MemberDTO dto) {
