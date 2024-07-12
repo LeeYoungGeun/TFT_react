@@ -1,5 +1,6 @@
 package com.project.react_tft.controller;
 
+import com.project.react_tft.Repository.MemberRepository;
 import com.project.react_tft.domain.Member;
 import com.project.react_tft.dto.MemberDTO;
 import com.project.react_tft.security.CustomUserDetailsService;
@@ -16,10 +17,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -30,7 +33,8 @@ public class MemberController {
     private final MemberService memberService;
     private final CustomUserDetailsService customUserDetailsService;
     private final JWTUtil jwtUtil;
-
+    private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
 
     @CrossOrigin(origins = "http://localhost:3000")
@@ -103,6 +107,26 @@ public class MemberController {
 
         return ResponseEntity.ok("수정성공했음.");
     }
+
+    @PostMapping("/checkPw")
+    public ResponseEntity<String> checkPw(@RequestBody Map<String, String> request) {
+        String mpw = request.get("mpw");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String mid = authentication.getName();
+
+        Optional<Member> optionalMember = memberRepository.findById(mid);
+        if (optionalMember.isPresent()) {
+            Member member = optionalMember.get();
+            if (passwordEncoder.matches(mpw, member.getMpw())) {
+                return ResponseEntity.ok("비밀번호가 일치합니다.");
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호가 일치하지 않습니다.");
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원 정보를 찾을 수 없습니다.");
+        }
+    }
+
 
     @DeleteMapping("/remove")
     public ResponseEntity<?> remove(@RequestBody MemberDTO dto) {
