@@ -103,9 +103,12 @@ public class MemberController {
         log.info("modifyPost..........................");
         log.info("memberJoinDTO.........................." + dto);
 
-        memberService.modify(dto);
-
-        return ResponseEntity.ok("회원정보 수정이 완료되었습니다.");
+        try {
+            memberService.modify(dto);
+            return ResponseEntity.ok("회원정보 수정이 완료되었습니다.");
+        } catch (MemberService.MemberMidExistException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("회원수정중 오류발생.");
+        }
     }
 
     @PostMapping("/checkPwModify")

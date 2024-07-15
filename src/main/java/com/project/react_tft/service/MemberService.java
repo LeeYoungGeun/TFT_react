@@ -14,7 +14,7 @@ public interface MemberService {
     Member login(String mid, String mpw);
 
     void remove(String mid);
-    void modify(MemberDTO memberDTO);
+    void modify(MemberDTO memberDTO) throws MemberMidExistException;
 
     Member getDetail(String mid);
 }

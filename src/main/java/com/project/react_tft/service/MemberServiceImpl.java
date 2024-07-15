@@ -73,8 +73,18 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void modify(MemberDTO memberDTO) {
+    public void modify(MemberDTO memberDTO) throws MemberMidExistException {
         log.info("회원정보를 수정하겠음----------------------------------.");
+
+        if (memberRepository.existsByMnick(memberDTO.getMnick())) {
+            log.info("이미 있는 닉네임인데요");
+            throw new MemberMidExistException();
+        }
+
+        if (memberRepository.existsByMemail(memberDTO.getMemail())){
+            log.info("이미 있는 이메일인데요");
+            throw new MemberMidExistException();
+        }
 
         Optional<Member> optionalMember = memberRepository.findById(memberDTO.getMid());
         if (optionalMember.isPresent()) {

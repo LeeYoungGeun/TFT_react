@@ -2,6 +2,7 @@ package com.project.react_tft.domain;
 
 import com.project.react_tft.dto.MemberDTO;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
 import java.util.HashSet;
@@ -23,11 +24,17 @@ public class Member extends BaseEntity {
     private List<Review> reviews;
 
     @Id
+    @NotEmpty
     private String mid;
+    @NotEmpty
     private String mname;
+    @NotEmpty
     private String mnick;
+    @NotEmpty
     private String mpw;
+    @NotEmpty
     private String memail;
+    @NotEmpty
     private String mphone;
     private boolean del;
     private boolean social;
