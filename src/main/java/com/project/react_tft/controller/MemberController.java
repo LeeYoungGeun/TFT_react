@@ -1,5 +1,6 @@
 package com.project.react_tft.controller;
 
+import com.project.react_tft.Repository.MemberRepository;
 import com.project.react_tft.domain.Member;
 import com.project.react_tft.dto.MemberDTO;
 import com.project.react_tft.security.CustomUserDetailsService;
@@ -16,10 +17,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -30,7 +33,8 @@ public class MemberController {
     private final MemberService memberService;
     private final CustomUserDetailsService customUserDetailsService;
     private final JWTUtil jwtUtil;
-
+    private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
 
     @CrossOrigin(origins = "http://localhost:3000")
@@ -101,18 +105,47 @@ public class MemberController {
 
         memberService.modify(dto);
 
-        return ResponseEntity.ok("수정성공했음.");
+        return ResponseEntity.ok("회원정보 수정이 완료되었습니다.");
     }
 
-    @DeleteMapping("/remove")
-    public ResponseEntity<?> remove(@RequestBody MemberDTO dto) {
-        String mid = dto.getMid();
+    @PostMapping("/checkPwModify")
+    public ResponseEntity<String> checkPw(@RequestBody Map<String, String> request) {
+        String mpw = request.get("mpw");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String mid = authentication.getName();
 
-        log.info("삭제삭제삭제삭제삭제");
-        log.info("삭제된 아이디 : " + dto);
-        memberService.remove(mid);
+        Optional<Member> optionalMember = memberRepository.findById(mid);
+        if (optionalMember.isPresent()) {
+            Member member = optionalMember.get();
+            if (passwordEncoder.matches(mpw, member.getMpw())) {
+                return ResponseEntity.ok("비밀번호가 일치.");
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호가 노일치.");
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원 정보가 없음.");
+        }
+    }
 
-        return ResponseEntity.ok("삭제성공했음.");
+
+    @PostMapping("/remove")
+    public ResponseEntity<String> checkPwAndRemove(@RequestBody Map<String, String> request) {
+        String mpw = request.get("mpw");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String mid = authentication.getName();
+
+        Optional<Member> optionalMember = memberRepository.findById(mid);
+        if (optionalMember.isPresent()) {
+            Member member = optionalMember.get();
+            if (passwordEncoder.matches(mpw, member.getMpw())) {
+                memberService.remove(mid);
+                return ResponseEntity.ok("성공적으로 삭제되었습니다.");
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호가 다릅니다.");
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원 정보가 없음.");
+        }
     }
 
 
