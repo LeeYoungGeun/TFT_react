@@ -111,7 +111,7 @@ public class MemberController {
         }
     }
 
-    @PostMapping("/checkPwModify")
+    @PostMapping("/checkPw")
     public ResponseEntity<String> checkPw(@RequestBody Map<String, String> request) {
         String mpw = request.get("mpw");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

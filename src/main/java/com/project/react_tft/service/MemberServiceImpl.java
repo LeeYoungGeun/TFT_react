@@ -76,19 +76,20 @@ public class MemberServiceImpl implements MemberService {
     public void modify(MemberDTO memberDTO) throws MemberMidExistException {
         log.info("회원정보를 수정하겠음----------------------------------.");
 
-        if (memberRepository.existsByMnick(memberDTO.getMnick())) {
-            log.info("이미 있는 닉네임인데요");
-            throw new MemberMidExistException();
-        }
-
-        if (memberRepository.existsByMemail(memberDTO.getMemail())){
-            log.info("이미 있는 이메일인데요");
-            throw new MemberMidExistException();
-        }
-
         Optional<Member> optionalMember = memberRepository.findById(memberDTO.getMid());
         if (optionalMember.isPresent()) {
             Member member = optionalMember.get();
+
+            // 현재 유저의 닉네임과 이메일을 제외하고 중복 검사 nullPointerException 때문에 member.getMnick() != nullfmf 를 넣어줌.
+            if (member.getMnick() != null && !member.getMnick().equals(memberDTO.getMnick()) && memberRepository.existsByMnick(memberDTO.getMnick())) {
+                log.info("이미 있는 닉네임인데요");
+                throw new MemberMidExistException();
+            }
+
+            if (!member.getMemail().equals(memberDTO.getMemail()) && memberRepository.existsByMemail(memberDTO.getMemail())){
+                log.info("이미 있는 이메일인데요");
+                throw new MemberMidExistException();
+            }
 
             // 기존 비밀번호를 임시로 저장
             String existingPassword = member.getMpw();
@@ -112,6 +113,7 @@ public class MemberServiceImpl implements MemberService {
             throw new RuntimeException("회원정보가 없는데요?");
         }
     }
+
 
     @Override
     public Member getDetail(String mid) {
