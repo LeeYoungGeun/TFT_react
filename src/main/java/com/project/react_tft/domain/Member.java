@@ -24,17 +24,11 @@ public class Member extends BaseEntity {
     private List<Review> reviews;
 
     @Id
-    @NotEmpty
     private String mid;
-    @NotEmpty
     private String mname;
-    @NotEmpty
     private String mnick;
-    @NotEmpty
     private String mpw;
-    @NotEmpty
     private String memail;
-    @NotEmpty
     private String mphone;
     private boolean del;
     private boolean social;

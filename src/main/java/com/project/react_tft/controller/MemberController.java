@@ -107,7 +107,7 @@ public class MemberController {
             memberService.modify(dto);
             return ResponseEntity.ok("회원정보 수정이 완료되었습니다.");
         } catch (MemberService.MemberMidExistException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("회원수정중 오류발생.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("닉네임 및 이메일이 이미 존재합니다.");
         }
     }
 
@@ -132,7 +132,7 @@ public class MemberController {
 
 
     @PostMapping("/remove")
-    public ResponseEntity<String> checkPwAndRemove(@RequestBody Map<String, String> request) {
+    public ResponseEntity<String> remove(@RequestBody Map<String, String> request) {
         String mpw = request.get("mpw");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String mid = authentication.getName();
