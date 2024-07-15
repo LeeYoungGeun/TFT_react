@@ -105,10 +105,10 @@ public class MemberController {
 
         memberService.modify(dto);
 
-        return ResponseEntity.ok("수정성공했음.");
+        return ResponseEntity.ok("회원정보 수정이 완료되었습니다.");
     }
 
-    @PostMapping("/checkPw")
+    @PostMapping("/checkPwModify")
     public ResponseEntity<String> checkPw(@RequestBody Map<String, String> request) {
         String mpw = request.get("mpw");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -118,25 +118,34 @@ public class MemberController {
         if (optionalMember.isPresent()) {
             Member member = optionalMember.get();
             if (passwordEncoder.matches(mpw, member.getMpw())) {
-                return ResponseEntity.ok("비밀번호가 일치합니다.");
+                return ResponseEntity.ok("비밀번호가 일치.");
             } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호가 일치하지 않습니다.");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호가 노일치.");
             }
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원 정보를 찾을 수 없습니다.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원 정보가 없음.");
         }
     }
 
 
-    @DeleteMapping("/remove")
-    public ResponseEntity<?> remove(@RequestBody MemberDTO dto) {
-        String mid = dto.getMid();
+    @PostMapping("/remove")
+    public ResponseEntity<String> checkPwAndRemove(@RequestBody Map<String, String> request) {
+        String mpw = request.get("mpw");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String mid = authentication.getName();
 
-        log.info("삭제삭제삭제삭제삭제");
-        log.info("삭제된 아이디 : " + dto);
-        memberService.remove(mid);
-
-        return ResponseEntity.ok("삭제성공했음.");
+        Optional<Member> optionalMember = memberRepository.findById(mid);
+        if (optionalMember.isPresent()) {
+            Member member = optionalMember.get();
+            if (passwordEncoder.matches(mpw, member.getMpw())) {
+                memberService.remove(mid);
+                return ResponseEntity.ok("성공적으로 삭제되었습니다.");
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호가 다릅니다.");
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원 정보가 없음.");
+        }
     }
 
 
