@@ -1,6 +1,10 @@
 package com.project.react_tft.service;
 
+import com.project.react_tft.Repository.MemberRepository;
+import com.project.react_tft.Repository.MovieRepository;
 import com.project.react_tft.Repository.ReviewRepository;
+import com.project.react_tft.domain.Member;
+import com.project.react_tft.domain.Movie;
 import com.project.react_tft.domain.Review;
 import com.project.react_tft.dto.ReviewDTO;
 import jakarta.transaction.Transactional;
@@ -9,6 +13,7 @@ import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -17,12 +22,27 @@ import java.util.Optional;
 @Log4j2
 public class ReviewServiceImpl implements ReviewService {
 
-    private final ReviewRepository reviewRepository;
     private final ModelMapper modelMapper;
+    private final MemberRepository memberRepository;
+    private final MovieRepository movieRepository;
+    private final ReviewRepository reviewRepository;
 
     @Override
     public Long register(ReviewDTO reviewDTO) {
-        Review review = modelMapper.map(reviewDTO, Review.class);
+        log.info("reviewDTO" + reviewDTO);
+
+        Member member = memberRepository.findById(reviewDTO.getMid())
+                .orElseThrow(() -> new RuntimeException("Member not found"));
+        Movie movie = movieRepository.findById(reviewDTO.getMovie_id())
+                .orElseThrow(() -> new RuntimeException("Movie not found"));
+
+        Review review =  Review.builder()
+                .member(member)
+                .movie(movie)
+                .review_text(reviewDTO.getReview_text())
+                .review_star(reviewDTO.getReview_star())
+                .build();
+
         return reviewRepository.save(review).getReview_id();
     }
 
@@ -44,5 +64,12 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public void remove(Long review_id) {
         reviewRepository.deleteById(review_id);
+    }
+
+    @Override
+    public List<Review> listOfReview(){
+        List<Review> dtoList = reviewRepository.listOfReview();
+        log.info("dtoList" + dtoList);
+        return dtoList;
     }
 }

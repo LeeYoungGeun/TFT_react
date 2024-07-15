@@ -8,12 +8,6 @@ public interface MovieService {
 
     Logger log = LoggerFactory.getLogger(MovieService.class);
 
-    class MovieIdExistException extends Exception {
-       public MovieIdExistException() {
-            log.info("MovieIdExistException");
-       }
-    }
-
-    Long register(MovieDTO movieDTO) throws MovieIdExistException ;
+    Long register(MovieDTO movieDTO) ;
 
 }

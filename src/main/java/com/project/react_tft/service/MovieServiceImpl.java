@@ -9,6 +9,8 @@ import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -19,8 +21,17 @@ public class MovieServiceImpl implements MovieService {
     private final ModelMapper modelMapper;
 
     @Override
-    public Long register(MovieDTO movieDTO) {
+    public Long register(MovieDTO movieDTO){
+
+        Optional<Movie> movieData =  movieRepository.findById(movieDTO.getMovie_id());
+
         Movie movie = modelMapper.map(movieDTO, Movie.class);
-        return movieRepository.save(movie).getMovie_id();
+        //movie id 존재할 경우
+        if (movieData.isPresent()) {
+            return movieDTO.getMovie_id();
+        } else {
+            //movie id 존재하지 않을경우
+            return movieRepository.save(movie).getMovie_id();
+        }
     }
 }

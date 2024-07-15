@@ -1,10 +1,13 @@
 package com.project.react_tft.service;
 
+import com.project.react_tft.domain.Review;
 import com.project.react_tft.dto.ReviewDTO;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.List;
 
 @Log4j2
 @SpringBootTest
@@ -54,6 +57,12 @@ public class ReviewServiceTests {
     public void testReviewDelete() throws ReviewService.ReviewIdExistException {
         long review_id = 3L;
         reviewService.remove(review_id);
+    }
+
+    @Test
+    public void testReviewList() throws ReviewService.ReviewIdExistException {
+        List<Review> reviewList =  reviewService.listOfReview();
+        log.info(reviewList);
     }
 
 }

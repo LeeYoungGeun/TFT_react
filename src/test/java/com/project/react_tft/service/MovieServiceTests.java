@@ -14,11 +14,11 @@ public class MovieServiceTests {
     private MovieService movieService;
 
     @Test
-    public void testMovieRegister() throws MovieService.MovieIdExistException {
+    public void testMovieRegister() {
         log.info(movieService.getClass().getName());
 
         MovieDTO movieDTO = MovieDTO.builder()
-                .movie_id(2L)
+                .movie_id(11L)
                 .movie_title("테스트 영화제목2")
                 .build();
 

@@ -20,13 +20,13 @@ import java.util.Map;
 @Log4j2
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/movie")
+@RequestMapping("/api/movie")
 public class MovieController {
 
     private final MovieService movieService;
 
     @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Long> register(@Valid @RequestBody MovieDTO movieDTO, BindingResult bindingResult) throws BindException, MovieService.MovieIdExistException {
+    public Map<String, Long> register(@Valid @RequestBody MovieDTO movieDTO, BindingResult bindingResult) throws BindException{
 
         log.info("register movie: {}", movieDTO);
 
