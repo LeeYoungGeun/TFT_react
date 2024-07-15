@@ -1,16 +1,13 @@
 package com.project.react_tft.controller;
 
-import com.project.react_tft.domain.Member;
-import com.project.react_tft.dto.MovieDTO;
+import com.project.react_tft.domain.Review;
 import com.project.react_tft.dto.ReviewDTO;
 import com.project.react_tft.service.MemberService;
 import com.project.react_tft.service.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindException;
@@ -21,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Log4j2
@@ -63,7 +61,18 @@ public class ReviewController {
         return resultMap;
     }
 
+    @PostMapping(value = "/listOfReview", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public List<Review> listOfReview(@Valid @RequestBody ReviewDTO reviewDTO, BindingResult bindingResult) throws BindException, ReviewService.ReviewIdExistException {
+        log.info("listOfReview review: {}", reviewDTO);
 
+        if(bindingResult.hasErrors()) {
+            throw new BindException(bindingResult);
+        }
+
+        Map<String, Long> resultMap = new HashMap<>();
+
+        return reviewService.listOfReview();
+    }
 
 
 }
