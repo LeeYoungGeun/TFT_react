@@ -31,6 +31,7 @@ public class TokenCheckFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
+        //토큰값이 없어도 들어갈 수 있는 페이지
         if (path.equals("/api/auth/signUp") || path.equals("/api/auth/login")) {
             filterChain.doFilter(request, response);
             return;
