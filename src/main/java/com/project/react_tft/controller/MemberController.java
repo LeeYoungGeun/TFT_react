@@ -82,7 +82,7 @@ public class MemberController {
     }
 
     @GetMapping("/modify")
-    public ResponseEntity<Member> modify() {
+    public ResponseEntity<?> modify() {
         log.info("modify..........................");
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -99,7 +99,7 @@ public class MemberController {
 
 
     @PutMapping("/modify")
-    public ResponseEntity<String> modifyPost(@RequestBody MemberDTO dto) {
+    public ResponseEntity<?> modifyPost(@RequestBody MemberDTO dto) {
         log.info("modifyPost..........................");
         log.info("memberJoinDTO.........................." + dto);
 
@@ -112,7 +112,7 @@ public class MemberController {
     }
 
     @PostMapping("/checkPw")
-    public ResponseEntity<String> checkPw(@RequestBody Map<String, String> request) {
+    public ResponseEntity<?> checkPw(@RequestBody Map<String, String> request) {
         String mpw = request.get("mpw");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String mid = authentication.getName();
@@ -132,7 +132,7 @@ public class MemberController {
 
 
     @PostMapping("/remove")
-    public ResponseEntity<String> remove(@RequestBody Map<String, String> request) {
+    public ResponseEntity<?> remove(@RequestBody Map<String, String> request) {
         String mpw = request.get("mpw");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String mid = authentication.getName();
