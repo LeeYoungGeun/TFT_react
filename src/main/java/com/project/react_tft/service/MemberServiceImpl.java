@@ -73,14 +73,38 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void modify(MemberDTO memberDTO) {
+    public void modify(MemberDTO memberDTO) throws MemberMidExistException {
         log.info("회원정보를 수정하겠음----------------------------------.");
 
         Optional<Member> optionalMember = memberRepository.findById(memberDTO.getMid());
         if (optionalMember.isPresent()) {
             Member member = optionalMember.get();
+
+            // 현재 유저의 닉네임과 이메일을 제외하고 중복 검사
+            // 소셜로그인시 수정하면 nullPointerException 때문에 member.getMnick() != null 를 넣어줌.
+            if (member.getMnick() != null &&memberRepository.existsByMnick(memberDTO.getMnick())) {
+                log.info("이미 있는 닉네임인데요");
+                throw new MemberMidExistException();
+            }
+
+            if (memberRepository.existsByMemail(memberDTO.getMemail())){
+                log.info("이미 있는 이메일인데요");
+                throw new MemberMidExistException();
+            }
+
+            // 기존 비밀번호를 임시로 저장
+            String existingPassword = member.getMpw();
+
+            // DTO의 데이터를 엔티티에 매핑
             modelMapper.map(memberDTO, member);
-            member.setMpw(passwordEncoder.encode(memberDTO.getMpw()));
+
+            // 비밀번호가 비어 있거나 기존 비밀번호와 같으면 기존 비밀번호 유지
+            if (memberDTO.getMpw() == null || memberDTO.getMpw().isEmpty() || passwordEncoder.matches(memberDTO.getMpw(), existingPassword)) {
+                member.setMpw(existingPassword);
+            } else {
+                // 새 비밀번호를 인코딩하여 저장
+                member.setMpw(passwordEncoder.encode(memberDTO.getMpw()));
+            }
 
             log.info("회원정보를 수정했음 ->" + member);
 
@@ -90,6 +114,7 @@ public class MemberServiceImpl implements MemberService {
             throw new RuntimeException("회원정보가 없는데요?");
         }
     }
+
 
     @Override
     public Member getDetail(String mid) {

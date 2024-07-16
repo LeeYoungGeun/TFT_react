@@ -2,6 +2,7 @@ package com.project.react_tft.domain;
 
 import com.project.react_tft.dto.MemberDTO;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
 import java.util.HashSet;
