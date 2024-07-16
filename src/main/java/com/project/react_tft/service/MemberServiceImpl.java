@@ -82,12 +82,12 @@ public class MemberServiceImpl implements MemberService {
 
             // 현재 유저의 닉네임과 이메일을 제외하고 중복 검사
             // 소셜로그인시 수정하면 nullPointerException 때문에 member.getMnick() != null 를 넣어줌.
-            if (member.getMnick() != null &&memberRepository.existsByMnick(memberDTO.getMnick())) {
+            if (member.getMnick() != null && !member.getMnick().equals(memberDTO.getMnick()) && memberRepository.existsByMnick(memberDTO.getMnick())) {
                 log.info("이미 있는 닉네임인데요");
                 throw new MemberMidExistException();
             }
 
-            if (memberRepository.existsByMemail(memberDTO.getMemail())){
+            if (!member.getMemail().equals(memberDTO.getMemail()) && memberRepository.existsByMemail(memberDTO.getMemail())){
                 log.info("이미 있는 이메일인데요");
                 throw new MemberMidExistException();
             }
