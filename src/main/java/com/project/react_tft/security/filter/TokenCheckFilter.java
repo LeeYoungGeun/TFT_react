@@ -35,7 +35,8 @@ public class TokenCheckFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-
+        
+        //경로가 api로 시작해야 해당 필터를 거치면서 authentication 값에 user정보가 실려있음 
         if(!path.startsWith("/api")){
             filterChain.doFilter(request, response);
             return;
