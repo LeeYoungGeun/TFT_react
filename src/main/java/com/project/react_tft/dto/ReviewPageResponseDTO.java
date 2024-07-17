@@ -23,13 +23,13 @@ public class ReviewPageResponseDTO<E> {
     private int page;
     private int size;
     private int total;
-    private int allStart;
+    private int allStars;
 
     private List<E> dtoList;
 
 
     @Builder(builderMethodName = "withAll")
-    public ReviewPageResponseDTO(ReviewPageRequestDTO reviewPageRequestDTO, List<E> dtoList , int total, int allStart) {
+    public ReviewPageResponseDTO(ReviewPageRequestDTO reviewPageRequestDTO, List<E> dtoList , int total, int allStars) {
 
         if(total <= 0) {
             return;
@@ -37,7 +37,7 @@ public class ReviewPageResponseDTO<E> {
         this.page = reviewPageRequestDTO.getPage();
         this.size = reviewPageRequestDTO.getSize();
         this.total = total;
-        this.allStart = allStart;
+        this.allStars = allStars;
 
         this.dtoList = dtoList;
     }
