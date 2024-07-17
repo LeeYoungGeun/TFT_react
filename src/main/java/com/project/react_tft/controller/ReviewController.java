@@ -90,15 +90,17 @@ public class ReviewController {
                         .build()
         ).collect(Collectors.toList());
 
+        int starts = reviewRepository.getSumStarRatingByMovieId(requestDTO.getMovie_id());
+
         log.info("result : {}", result.getContent());
         log.info("resultList : {}", resultList);
-        log.info("All start : {}", reviewRepository.getSumStarRatingByMovieId(requestDTO.getMovie_id()));
+        log.info("All start : {}", starts);
 
         return ReviewPageResponseDTO.<ReviewDTO>withAll()
                 .reviewPageRequestDTO(requestDTO)
                 .dtoList(resultList)
                 .total((int) result.getTotalElements())
-                .allStart(reviewRepository.getSumStarRatingByMovieId(requestDTO.getMovie_id()))
+                .allStars(starts)
                 .build();
 
         //아래처럼 사용가능
