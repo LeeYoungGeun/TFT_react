@@ -1,3 +1,10 @@
+buildscript {
+    ext{
+        queryDslVersion = "5.0.0"
+    }
+}
+
+
 plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.7'
@@ -77,3 +84,15 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+sourceSets {
+    main{
+        java{
+            srcDirs = ["$projectDir/src/main/java", "$projectDir/build/generated"]
+        }
+    }
+}
+
+
+//compile정리
+compileJava.dependsOn('clean')

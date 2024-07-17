@@ -95,6 +95,7 @@ public class BoardController {
     @Operation(summary = "board Read - GET 방식으로 게시글 1개 조회")
     @GetMapping("/read/{bno}")  //조회
     public ResponseEntity<BoardDTO> read(@PathVariable("bno") Long bno) {
+        log.info("test~!!!!99999999999999999999999999999999999999999999");
         BoardDTO boardDTO = boardService.readOne(bno);
         log.info(boardDTO);
     //        model.addAttribute("dto", boardDTO);
