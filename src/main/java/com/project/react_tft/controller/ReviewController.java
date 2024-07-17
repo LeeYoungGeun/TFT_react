@@ -78,7 +78,7 @@ public class ReviewController {
         if(bindingResult.hasErrors()) {
             throw new BindException(bindingResult);
         }
-        
+
         Page<Review> result = reviewService.listOfReviewPaginated(requestDTO.getMovie_id(), requestDTO.getPage(), requestDTO.getSize() );
         List<ReviewDTO> resultList = result.getContent().stream().map(review ->
                 ReviewDTO.builder()

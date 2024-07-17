@@ -29,7 +29,7 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
+        log.info("-----------------------------------------------------------------------------------------");
         String path = request.getRequestURI();
         log.info("path: " + path);
 
@@ -85,7 +85,7 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
             String refreshTokenValue = tokens.get("refreshToken");
 
             //RefreshToken이 3일도 안남았다면
-            if(gapTime < (1000 * 60 * 60 * 24 *3 )){
+            if(gapTime < (1000 * 60 * 60 * 3)){
                 log.info("새로운 리프레쉬 토큰을 발급했음.");
                 refreshTokenValue = jwtUtil.generateToken(Map.of("mid", mid), 30);
             }

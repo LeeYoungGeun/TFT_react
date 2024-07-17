@@ -32,7 +32,7 @@ public class JWTUtil {
         payloads.putAll(valueMap);
 
         //유효시간.  토큰 생성시간.
-        int time = (60 * 24 ) * days; //시간설정. 60 * 24 는 하루
+        int time = (60 * 24) * days; //시간설정. 60 * 24 는 하루
 
         String jwtStr = Jwts.builder()
                 .setHeader(headers)
