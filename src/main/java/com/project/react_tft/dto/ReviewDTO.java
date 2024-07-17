@@ -1,17 +1,19 @@
 package com.project.react_tft.dto;
 
+import com.project.react_tft.domain.Member;
+import com.project.react_tft.domain.Movie;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReviewDTO {
+
+//    private Member member;
+//    private Movie movie;
 
     //리뷰id
     private Long review_id;

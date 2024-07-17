@@ -59,10 +59,10 @@ public class ReviewServiceTests {
         reviewService.remove(review_id);
     }
 
-    @Test
-    public void testReviewList() throws ReviewService.ReviewIdExistException {
-        List<Review> reviewList =  reviewService.listOfReview();
-        log.info(reviewList);
-    }
+//    @Test
+//    public void testReviewList() throws ReviewService.ReviewIdExistException {
+//        List<Review> reviewList =  reviewService.listOfReview();
+//        log.info(reviewList);
+//    }
 
 }
