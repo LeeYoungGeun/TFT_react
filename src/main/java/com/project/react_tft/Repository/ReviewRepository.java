@@ -12,8 +12,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query("SELECT r FROM Review r WHERE r.movie.movie_id = :movie_id")
     Page<Review> listOfReview(@Param("movie_id") Long movie_id, Pageable pageable);
 
-    @Query("SELECT COALESCE(SUM(r.review_star), 0) FROM Review r WHERE r.movie.movie_id = :movieId")
-    Integer getSumStarRatingByMovieId(@Param("movieId") Long movieId);
+    @Query("SELECT COALESCE(SUM(r.review_star), 0) FROM Review r WHERE r.movie.movie_id = :movie_id")
+    int getSumStarRatingByMovieId(@Param("movie_id") Long movie_id);
 
     /* @Query("SELECT r FROM Review r WHERE r.movie.movie_id = :movieId")
     Page<Review> findReviewsByMovieId(@Param("movieId") Long movieId, Pageable pageable);
