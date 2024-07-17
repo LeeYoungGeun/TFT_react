@@ -11,9 +11,12 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -67,9 +70,8 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<Review> listOfReview(){
-        List<Review> dtoList = reviewRepository.listOfReview();
-        log.info("dtoList" + dtoList);
-        return dtoList;
+    public Page<Review> listOfReviewPaginated(Long movie_Id, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("review_id").ascending());
+        return reviewRepository.listOfReview(movie_Id, pageable);
     }
 }
