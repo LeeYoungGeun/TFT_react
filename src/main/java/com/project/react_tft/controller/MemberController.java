@@ -121,8 +121,10 @@ public class MemberController {
         if (optionalMember.isPresent()) {
             Member member = optionalMember.get();
             if (passwordEncoder.matches(mpw, member.getMpw())) {
+                log.info("비밀번호가 일치");
                 return ResponseEntity.ok("비밀번호가 일치.");
             } else {
+                log.info("비밀번호가 노일치.");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호가 노일치.");
             }
         } else {
