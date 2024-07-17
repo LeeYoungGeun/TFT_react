@@ -12,7 +12,7 @@ public class RootConfig {
         modelMapper.getConfiguration()
                 .setFieldMatchingEnabled(true)
                 .setFieldAccessLevel(org.modelmapper.config.Configuration.AccessLevel.PRIVATE)
-                .setMatchingStrategy(MatchingStrategies.STRICT);
+                .setMatchingStrategy(MatchingStrategies.STRICT); //(MatchingStrategies.LOOSE); STRICT와 LOOSE의 차이점?
         return modelMapper;
     }
 
