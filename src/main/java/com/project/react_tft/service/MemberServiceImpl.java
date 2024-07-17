@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -69,5 +70,50 @@ public class MemberServiceImpl implements MemberService {
             log.info("아이디가 없는데요.");
             return null;
         }
+    }
+
+    @Override
+    public void modify(MemberDTO memberDTO) {
+        log.info("회원정보를 수정하겠음----------------------------------.");
+
+        Optional<Member> optionalMember = memberRepository.findById(memberDTO.getMid());
+        if (optionalMember.isPresent()) {
+            Member member = optionalMember.get();
+            modelMapper.map(memberDTO, member);
+            member.setMpw(passwordEncoder.encode(memberDTO.getMpw()));
+
+            log.info("회원정보를 수정했음 ->" + member);
+
+            memberRepository.save(member);
+        } else {
+            log.info("회원 정보를 찾을 수 없음: ID=" + memberDTO.getMid());
+            throw new RuntimeException("회원정보가 없는데요?");
+        }
+    }
+
+    @Override
+    public Member getDetail(String mid) {
+        Optional<Member> result = memberRepository.findById(mid);
+
+        if (result.isPresent()) {
+            Member member = result.get();
+            log.info("Member service impl getDetail --------------------------------------");
+            log.info(member);
+            return member;
+        } else {
+            throw new NoSuchElementException("비어있음...................... " + mid);
+        }
+    }
+
+    @Override
+    public void remove(String mid) {
+        log.info("회원을 삭제 하겠음.");
+        log.info(mid);
+        Member member = getDetail(mid);
+        member.changeDel(true);
+
+        log.info(member + "를 삭제하겠음.");
+
+        memberRepository.save(member);
     }
 }

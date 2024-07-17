@@ -53,19 +53,14 @@ public class CustomSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         log.info("---------------------------configure-------------------------------");
 
-//        http
-//                .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화
-//                .authorizeHttpRequests(authorize -> authorize
-//                        .requestMatchers("/api/auth/**").permitAll() // 인증 없이 접근 가능 경로 설정
-//                        .anyRequest().authenticated() // 다른 모든 요청은 인증 필요
-//                )
-//                .sessionManagement(httpSecuritySessionManagementConfigurer -> // 세션 비활성화
-//                        httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                );
         http
                 .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화
                 .authorizeHttpRequests(authorize -> authorize
-                        .anyRequest().permitAll()
+                        .requestMatchers("/api/auth/**").permitAll() // 인증 없이 접근 가능 경로 설정
+                        .anyRequest().permitAll() // 다른 모든 요청은 인증 필요
+                )
+                .sessionManagement(httpSecuritySessionManagementConfigurer -> // 세션 비활성화
+                        httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
 
         // AuthenticationManager 설정

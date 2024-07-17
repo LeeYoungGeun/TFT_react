@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -13,9 +14,13 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@ToString(exclude = "roleSet")
-@Table(name="Member")
+@ToString
+@Table
 public class Member extends BaseEntity {
+
+    @OneToMany
+    @ToString.Exclude
+    private List<Review> reviews;
 
     @Id
     private String mid;
@@ -28,9 +33,9 @@ public class Member extends BaseEntity {
     private boolean del;
     private boolean social;
 
-
     @ElementCollection(fetch = FetchType.LAZY)
     @Builder.Default
+    @ToString.Exclude
     private Set<MemberRole> roleSet = new HashSet<>();
 
     public Member(MemberDTO dto) {
@@ -45,6 +50,11 @@ public class Member extends BaseEntity {
     //addRoll 역할 추가
     public void addRole(MemberRole role) {
         this.roleSet.add(role);
+    }
+
+    //삭제 여부(유저가 계정탈퇴를 원할시 바로삭제하지 않게)
+    public void changeDel(boolean del) {
+        this.del = del;
     }
 
 }

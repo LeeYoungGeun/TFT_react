@@ -1,9 +1,3 @@
-buildscript {   // Querydsl의 버전 지정
-    ext {
-        queryDslVersion = "5.0.0"
-    }
-}
-
 plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.7'
@@ -42,9 +36,7 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok'
     testCompileOnly 'org.projectlombok:lombok'
 
-    runtimeOnly 'com.mysql:mysql-connector-j'   // 처음에 runtimeOnly로만 설정되어있어서 test에서 통신 안됬었음
-    testRuntimeOnly 'com.mysql:mysql-connector-j' // Test에서도 db랑 통신하려면 testRuntimeOnly를 추가해야함
-//    implementation 'com.mysql:mysql-connector-j' //위의 두개를 따로 하기 번거로우면 처음부터 implementation로 하면 된다.
+    runtimeOnly 'com.mysql:mysql-connector-j'
 
     // validation 필수값 입력
     implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -77,19 +69,11 @@ dependencies {
 //    //ThymeLeaf에서 스프링시큐리티 사용하기 위한 라이브러리
 //    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.2.RELEASE'
 
+    //소셜로그인을 위한 oauth2
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
 }
 
 tasks.named('test') {
     useJUnitPlatform()
 }
-
-sourceSets {    // Querydsl sourceSets 지정
-    main {
-        java {
-            srcDirs = ["$projectDir/src/main/java","$projectDir/build/generated"]
-        }
-    }
-}
-
-// Querydsl compile 정리
-compileJava.dependsOn('clean')

@@ -13,4 +13,8 @@ public interface MemberService {
 
     Member login(String mid, String mpw);
 
+    void remove(String mid);
+    void modify(MemberDTO memberDTO);
+
+    Member getDetail(String mid);
 }
