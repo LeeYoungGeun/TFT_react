@@ -60,7 +60,7 @@ public class ReviewServiceImpl implements ReviewService {
     public void modify(ReviewDTO reviewDTO) {
         Optional<Review> result = reviewRepository.findById(reviewDTO.getReview_id());
         Review review = result.orElseThrow();
-        review.change(reviewDTO.getReview_text(),reviewDTO.getReview_star());
+        review.change(reviewDTO.getReview_text(), reviewDTO.getReview_star());
         reviewRepository.save(review);
     }
 

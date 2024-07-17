@@ -77,6 +77,7 @@ public class MemberController {
 
             return ResponseEntity.ok(tokens);
         } else {
+            log.info("아이디 없을지도.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("아이디 및 비밀번호 오류임.");
         }
     }
