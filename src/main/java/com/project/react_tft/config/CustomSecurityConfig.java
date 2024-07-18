@@ -1,8 +1,9 @@
 package com.project.react_tft.config;
 
+
+import com.project.react_tft.security.CustomSocialLoginSuccessHandler;
 import com.project.react_tft.security.CustomUserDetailsService;
 import com.project.react_tft.security.filter.LoginFilter;
-import com.project.react_tft.security.filter.RefreshTokenFilter;
 import com.project.react_tft.security.filter.TokenCheckFilter;
 import com.project.react_tft.security.filter.handler.UserLoginSuccessHandler;
 import com.project.react_tft.util.JWTUtil;
@@ -21,6 +22,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
@@ -79,6 +81,13 @@ public class CustomSecurityConfig {
         LoginFilter loginFilter = new LoginFilter("/api/auth/login");
         loginFilter.setAuthenticationManager(authenticationManager);
 
+
+        //소셜
+        http.oauth2Login(httpSecurityOAuth2LoginConfigurer -> {
+            httpSecurityOAuth2LoginConfigurer.loginPage("/api/auth/login");
+            httpSecurityOAuth2LoginConfigurer.successHandler(authenticationSuccessHandler());
+        });
+
         // API Login SuccessHandler 설정
         UserLoginSuccessHandler successHandler = new UserLoginSuccessHandler(jwtUtil);
         loginFilter.setAuthenticationSuccessHandler(successHandler);
@@ -99,8 +108,12 @@ public class CustomSecurityConfig {
                     .tokenValiditySeconds(60 * 60 * 24 * 30);
         });
 
+
+
         return http.build();
     }
+
+
 
     // CORS 필터 Bean 설정
     @Bean
@@ -113,6 +126,12 @@ public class CustomSecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);
         return source;
+    }
+
+    @Bean
+    public AuthenticationSuccessHandler authenticationSuccessHandler(){
+        return new CustomSocialLoginSuccessHandler(passwordEncoder,jwtUtil);
+
     }
 
     @Bean
