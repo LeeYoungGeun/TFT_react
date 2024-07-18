@@ -107,7 +107,7 @@ public class BoardController {
     @PutMapping(value = "/{bno}")
     public ResponseEntity<Map<String, Long>> modify(@PathVariable("bno") Long bno,
                          @Valid @RequestBody BoardDTO boardDTO) {
-        log.info("board modify post ...... " + boardDTO);
+        log.info("HarryPotter. " + boardDTO);
 
         boardDTO.setBno(bno);   // 이걸 왜 쓰는거지?
         boardService.modify(boardDTO);
