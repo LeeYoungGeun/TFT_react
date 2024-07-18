@@ -25,6 +25,7 @@ public class Member extends BaseEntity {
 
     @Id
     private String mid;
+
     private String mname;
     private String mnick;
     private String mpw;

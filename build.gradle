@@ -1,3 +1,10 @@
+buildscript {
+    ext{
+        queryDslVersion = "5.0.0"
+    }
+}
+
+
 plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.7'
@@ -54,6 +61,21 @@ dependencies {
     // 인증 정보 JSON 문자열 처리를 위한 gson 라이브러리
     implementation 'com.google.code.gson:gson:2.10.1'
 
+    // Querydsl 관련 라이브러리
+    implementation "com.querydsl:querydsl-jpa:${queryDslVersion}:jakarta"
+    annotationProcessor(
+            "jakarta.persistence:jakarta.persistence-api",
+            "jakarta.annotation:jakarta.annotation-api",
+            "com.querydsl:querydsl-apt:${queryDslVersion}:jakarta"
+    )
+    // thymleaf 관련 라이브러리
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    //Thymeleaf의 레이아웃 기능을 위한 추가 라이브러리
+    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.3.0'
+//    //ThymeLeaf에서 스프링시큐리티 사용하기 위한 라이브러리
+//    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.2.RELEASE'
+
     //소셜로그인을 위한 oauth2
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
@@ -62,3 +84,15 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+sourceSets {
+    main{
+        java{
+            srcDirs = ["$projectDir/src/main/java", "$projectDir/build/generated"]
+        }
+    }
+}
+
+
+//compile정리
+compileJava.dependsOn('clean')

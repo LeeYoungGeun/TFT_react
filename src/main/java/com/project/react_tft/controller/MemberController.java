@@ -85,7 +85,6 @@ public class MemberController {
     @GetMapping("/modify")
     public ResponseEntity<?> modify() {
         log.info("modify..........................");
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
         log.info(principal);

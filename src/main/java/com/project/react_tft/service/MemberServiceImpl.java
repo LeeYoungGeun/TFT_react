@@ -119,7 +119,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public Member getDetail(String mid) {
         Optional<Member> result = memberRepository.findById(mid);
-
+        log.info("개인정보인데요?????");
         if (result.isPresent()) {
             Member member = result.get();
             log.info("Member service impl getDetail --------------------------------------");
