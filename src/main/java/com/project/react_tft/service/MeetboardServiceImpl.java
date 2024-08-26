@@ -4,15 +4,21 @@ import com.project.react_tft.Repository.MeetBoardRepository;
 import com.project.react_tft.domain.Board;
 import com.project.react_tft.domain.MeetBoard;
 import com.project.react_tft.domain.Member;
-import com.project.react_tft.dto.MeetBoardDTO;
+import com.project.react_tft.dto.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -63,7 +69,9 @@ public class MeetboardServiceImpl implements MeetBoardService {
     public void remove(Long meetId) {
         meetBoardRepository.deleteById(meetId);
     }
-}
+
+
+    }
 
 
 

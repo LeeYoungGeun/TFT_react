@@ -45,7 +45,7 @@ public class MeetBoardController {
 
 
     @PutMapping("/modify/{meetNum}")
-    public ResponseEntity<?> modify(@PathVariable Long meetNum ,@RequestBody MeetBoardDTO meetBoardDTO){
+    public ResponseEntity<?> modify(@RequestBody MeetBoardDTO meetBoardDTO){
 
         meetBoardService.modify(meetBoardDTO);
 
