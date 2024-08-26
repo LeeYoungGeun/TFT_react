@@ -11,6 +11,8 @@ import com.project.react_tft.dto.ReviewPageRequestDTO;
 import com.project.react_tft.dto.ReviewPageResponseDTO;
 import com.project.react_tft.service.MemberService;
 import com.project.react_tft.service.ReviewService;
+import com.project.react_tft.service.ReviewService.ReviewIdExistException;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -21,7 +23,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -118,6 +123,44 @@ public class ReviewController {
         });
         return re;*/
     }
+    
 
+    @PutMapping(value = "/modify", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, String> modify(@Valid @RequestBody ReviewDTO reviewDTO, BindingResult bindingResult) throws BindException {
+        log.info("modify review: {}", reviewDTO);
+
+        if(bindingResult.hasErrors()) {
+            throw new BindException(bindingResult);
+        }
+
+        try {
+            reviewService.modify(reviewDTO);
+        } catch (ReviewIdExistException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        Map<String, String> resultMap = new HashMap<>();
+        resultMap.put("result", "success");
+
+        return resultMap;
+    }
+
+    @DeleteMapping("/{reviewId}")
+    public Map<String, String> remove(@PathVariable Long reviewId) {
+        log.info("remove review: {}", reviewId);
+
+        try {
+            reviewService.remove(reviewId);
+        } catch (ReviewIdExistException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        Map<String, String> resultMap = new HashMap<>();
+        resultMap.put("result", "success");
+
+        return resultMap;
+    }
 
 }
