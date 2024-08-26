@@ -1,13 +1,14 @@
 package com.project.react_tft.service;
 
+import com.project.react_tft.Repository.search.BoardSearch;
 import com.project.react_tft.domain.MeetBoard;
 import com.project.react_tft.domain.Member;
-import com.project.react_tft.dto.MeetBoardDTO;
+import com.project.react_tft.dto.*;
 
 public interface MeetBoardService {
 
 
-    class MeetIdExistException extends Exception {
+    class MeetIdExistException extends Exception{
         public MeetIdExistException() {}
     }
 
@@ -18,4 +19,6 @@ public interface MeetBoardService {
     MeetBoard getDetail(Long meetId);
 
     void remove(Long meetId);
+
+
 }
