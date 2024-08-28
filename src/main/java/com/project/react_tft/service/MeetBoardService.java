@@ -15,7 +15,7 @@ public interface MeetBoardService {
         public MeetIdExistException() {}
     }
 
-    Long registerMeetBoard(MeetBoardDTO meetBoardDTO);
+    Long registerMeet(MeetBoardDTO meetBoardDTO);
 
     void modify(MeetBoardDTO meetBoardDTO);
 
@@ -33,6 +33,7 @@ public interface MeetBoardService {
                 .meetContent(meetBoardDTO.getMeetContent())
                 .meetWriter(meetBoardDTO.getMeetWriter())
                 .meetTime(meetBoardDTO.getMeetTime())
+                .personnel(meetBoardDTO.getPersonnel())
 
                 .build();
 
@@ -53,6 +54,7 @@ public interface MeetBoardService {
                 .meetContent(meetBoard.getMeetContent())
                 .meetWriter(meetBoard.getMeetWriter())
                 .meetTime(meetBoard.getMeetTime())
+                .personnel(meetBoard.getPersonnel())
                 .regDate(meetBoard.getRegDate())
                 .modDate(meetBoard.getModDate())
                 .build();

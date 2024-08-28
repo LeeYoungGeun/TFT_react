@@ -1,9 +1,6 @@
 package com.project.react_tft.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Time;
@@ -34,6 +31,5 @@ public class MeetBoardDTO {
 
     private List<String> fileNames;
 
-    private MultipartFile image;
 
 }

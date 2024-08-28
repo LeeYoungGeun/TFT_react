@@ -30,7 +30,7 @@ public class MeetboardServiceImpl implements MeetBoardService {
     private final ModelMapper modelMapper;
 
     @Override
-    public Long registerMeetBoard(MeetBoardDTO meetBoardDTO) {
+    public Long registerMeet(MeetBoardDTO meetBoardDTO) {
         MeetBoard meetBoard = dtoToEntity(meetBoardDTO);
 
         Long meetId = meetBoardRepository.save(meetBoard).getMeetId();
@@ -44,6 +44,14 @@ public class MeetboardServiceImpl implements MeetBoardService {
             MeetBoard meetBoard = result.get();
             modelMapper.map(meetBoardDTO, meetBoard);
             meetBoardRepository.save(meetBoard);
+
+            if(meetBoardDTO.getFileNames() != null){
+                for (String fileName : meetBoardDTO.getFileNames()) {
+                    String[] arr = fileName.split("_");
+                    meetBoard.addImage(arr[0], arr[1]);
+                }
+            }
+
             log.info("meet 수정완료");
         } else {
             log.info("게시물이 없는데요?");
