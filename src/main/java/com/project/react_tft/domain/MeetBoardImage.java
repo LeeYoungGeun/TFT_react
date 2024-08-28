@@ -9,6 +9,7 @@ import lombok.*;
 @Entity
 @Builder
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(exclude = "meetBoard")

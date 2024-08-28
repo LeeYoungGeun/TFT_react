@@ -1,7 +1,11 @@
 package com.project.react_tft.controller;
 
+import com.project.react_tft.Repository.MeetBoardRepository;
+import com.project.react_tft.domain.MeetBoard;
+import com.project.react_tft.domain.MeetBoardImage;
 import com.project.react_tft.dto.image.ImageResultDTO;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.coobird.thumbnailator.Thumbnailator;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,7 +14,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,7 +32,7 @@ public class MeetBoardImageController {
     private String uploadPath;
 
     @Operation(summary = "파일 등록", description = "POST 방식으로 파일을 등록합니다.")
-    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ImageResultDTO> upload(@RequestPart("files") List<MultipartFile> files) {
 
         if (files != null && !files.isEmpty()) {
@@ -47,13 +50,13 @@ public class MeetBoardImageController {
                     multipartFile.transferTo(savePath);
 
                     //이미지 파일의 종류라면
-                    if (Files.probeContentType(savePath).startsWith("image")) {
+                    if(Files.probeContentType(savePath).startsWith("image")){
 
                         image = true;
 
-                        File thumbFile = new File(uploadPath, "s_" + uuid + "_" + originalName);
+                        File thumbFile = new File(uploadPath, "s_" + uuid+"_"+ originalName);
 
-                        Thumbnailator.createThumbnail(savePath.toFile(), thumbFile, 200, 200); // 썸네일 표기??
+                        Thumbnailator.createThumbnail(savePath.toFile(), thumbFile, 200,200); // 썸네일 표기??
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -71,15 +74,15 @@ public class MeetBoardImageController {
 
     @Operation(summary = "GET방식으로 첨부파일 조회")
     @GetMapping("/view/{fileName}")
-    public ResponseEntity<Resource> viewFileGET(@PathVariable String fileName) {
+    public ResponseEntity<Resource> viewFileGET(@PathVariable String fileName){
 
-        Resource resource = new FileSystemResource(uploadPath + File.separator + fileName);
+        Resource resource = new FileSystemResource(uploadPath+File.separator + fileName);
         String resourceName = resource.getFilename();
         HttpHeaders headers = new HttpHeaders();
 
-        try {
-            headers.add("Content-Type", Files.probeContentType(resource.getFile().toPath()));
-        } catch (Exception e) {
+        try{
+            headers.add("Content-Type", Files.probeContentType( resource.getFile().toPath() ));
+        } catch(Exception e){
             return ResponseEntity.internalServerError().build();
         }
         return ResponseEntity.ok().headers(headers).body(resource);
@@ -87,9 +90,9 @@ public class MeetBoardImageController {
 
     @Operation(summary = "DELETE 방식으로 파일 삭제")
     @DeleteMapping("/remove/{fileName}")
-    public Map<String, Boolean> removeFile(@PathVariable String fileName) {
+    public Map<String,Boolean> removeFile(@PathVariable String fileName){
 
-        Resource resource = new FileSystemResource(uploadPath + File.separator + fileName);
+        Resource resource = new FileSystemResource(uploadPath+File.separator + fileName);
         String resourceName = resource.getFilename();
 
         Map<String, Boolean> resultMap = new HashMap<>();
@@ -100,8 +103,8 @@ public class MeetBoardImageController {
             removed = resource.getFile().delete();
 
             //섬네일이 존재한다면
-            if (contentType.startsWith("image")) {
-                File thumbnailFile = new File(uploadPath + File.separator + "s_" + fileName);
+            if(contentType.startsWith("image")){
+                File thumbnailFile = new File(uploadPath+File.separator +"s_" + fileName);
                 thumbnailFile.delete();
             }
 
