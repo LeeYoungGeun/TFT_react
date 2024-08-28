@@ -49,7 +49,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
     // swagger UI 설정
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
 
     //modelmapper
     implementation 'org.modelmapper:modelmapper:3.2.0'
@@ -79,6 +79,8 @@ dependencies {
     //소셜로그인을 위한 oauth2
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
+    //썸네일
+    implementation 'net.coobird:thumbnailator:0.4.17'
 }
 
 tasks.named('test') {

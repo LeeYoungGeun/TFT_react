@@ -7,10 +7,12 @@ import lombok.NoArgsConstructor;
 
 import java.sql.Time;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class MeetBoardDTO {
 
     private Long meetId;
@@ -28,5 +30,7 @@ public class MeetBoardDTO {
     private LocalDateTime regDate;
 
     private LocalDateTime modDate;
+
+    private List<String> fileNames;
 
 }

@@ -31,7 +31,7 @@ public class MeetboardServiceImpl implements MeetBoardService {
 
     @Override
     public Long registerMeetBoard(MeetBoardDTO meetBoardDTO) {
-        MeetBoard meetBoard = modelMapper.map(meetBoardDTO, MeetBoard.class);
+        MeetBoard meetBoard = dtoToEntity(meetBoardDTO);
 
         Long meetId = meetBoardRepository.save(meetBoard).getMeetId();
         return meetId;
@@ -52,14 +52,15 @@ public class MeetboardServiceImpl implements MeetBoardService {
     }
 
     @Override
-    public MeetBoard getDetail(Long meetId) {
-        Optional<MeetBoard> result = meetBoardRepository.findById(meetId);
+    public MeetBoardDTO getDetail(Long meetId) {
+        Optional<MeetBoard> result = meetBoardRepository.findByIdWithImages(meetId);
         log.info("게시글을를 불러오겠음");
         if (result.isPresent()) {
             MeetBoard meetBoard = result.get();
+            MeetBoardDTO meetBoardDTO = entityToDTO(meetBoard);
             log.info("상세 개시물을 불러왔음");
             log.info(meetId);
-            return meetBoard;
+            return meetBoardDTO;
         } else {
             throw new NoSuchElementException("비어있음...................... " + meetId);
         }
@@ -68,6 +69,26 @@ public class MeetboardServiceImpl implements MeetBoardService {
     @Override
     public void remove(Long meetId) {
         meetBoardRepository.deleteById(meetId);
+    }
+
+    @Override
+    public PageResponseDTO<MeetBoardDTO> list(PageRequestDTO pageRequestDTO) {
+        String[] types = pageRequestDTO.getTypes();
+        String keyword = pageRequestDTO.getKeyword();
+        Pageable pageable = pageRequestDTO.getPageable("meetId");
+
+        Page<MeetBoard> result = meetBoardRepository.searchAll(types, keyword, pageable);
+
+        // 변환... MeetBoard -> MeetBoardDTO
+        List<MeetBoardDTO> dtoList = result.getContent().stream()
+                .map(meetBoard -> modelMapper.map(meetBoard, MeetBoardDTO.class))
+                .collect(Collectors.toList());
+
+        return PageResponseDTO.<MeetBoardDTO>withAll()
+                .pageRequestDTO(pageRequestDTO)
+                .dtoList(dtoList)
+                .total((int)result.getTotalElements())
+                .build();
     }
 
 

@@ -2,7 +2,10 @@ package com.project.react_tft.controller;
 
 import com.project.react_tft.domain.MeetBoard;
 import com.project.react_tft.domain.Member;
+import com.project.react_tft.dto.BoardDTO;
 import com.project.react_tft.dto.MeetBoardDTO;
+import com.project.react_tft.dto.PageRequestDTO;
+import com.project.react_tft.dto.PageResponseDTO;
 import com.project.react_tft.service.MeetBoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -21,6 +24,15 @@ public class MeetBoardController {
 
     private final MeetBoardService meetBoardService;
 
+
+    @GetMapping(value = "/list")
+    public ResponseEntity<?> getList(PageRequestDTO pageRequestDTO){
+
+        meetBoardService.list(pageRequestDTO);
+
+        return ResponseEntity.status(200).body("List접근 완료");
+    }
+
     @GetMapping("/register")
     public ResponseEntity<?> getRegister() {
         log.info("meet board register 접근완료 ");
@@ -38,9 +50,9 @@ public class MeetBoardController {
     @GetMapping("/modify/{meetNum}")
     public ResponseEntity<?> getModify(@PathVariable Long meetNum){
 
-        MeetBoard meetBoard = meetBoardService.getDetail(meetNum);
+        MeetBoardDTO meetBoardDTO = meetBoardService.getDetail(meetNum);
 
-        return ResponseEntity.ok(meetBoard);
+        return ResponseEntity.ok(meetBoardDTO);
     }
 
 
@@ -55,10 +67,10 @@ public class MeetBoardController {
     @GetMapping("/read/{meetNum}")
     public ResponseEntity<?> read(@PathVariable Long meetNum){
 
-        MeetBoard meetBoard = meetBoardService.getDetail(meetNum);
+        MeetBoardDTO meetBoardDTO = meetBoardService.getDetail(meetNum);
 
 
-        return ResponseEntity.ok(meetBoard);
+        return ResponseEntity.ok(meetBoardDTO);
 
     }
 
