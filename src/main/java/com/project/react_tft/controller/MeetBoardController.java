@@ -26,12 +26,10 @@ public class MeetBoardController {
 
 
     @GetMapping(value = "/list")
-    public ResponseEntity<?> getList(PageRequestDTO pageRequestDTO){
-        
+    public ResponseEntity<PageResponseDTO<MeetBoardDTO>> getList(PageRequestDTO pageRequestDTO) {
         log.info("리스트에 접근했음");
-        meetBoardService.list(pageRequestDTO);
-
-        return ResponseEntity.status(200).body("List접근 완료");
+        PageResponseDTO<MeetBoardDTO> responseDTO = meetBoardService.list(pageRequestDTO);
+        return ResponseEntity.ok(responseDTO);
     }
 
     @GetMapping("/register")
