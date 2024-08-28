@@ -27,7 +27,8 @@ public class MeetBoardController {
 
     @GetMapping(value = "/list")
     public ResponseEntity<?> getList(PageRequestDTO pageRequestDTO){
-
+        
+        log.info("리스트에 접근했음");
         meetBoardService.list(pageRequestDTO);
 
         return ResponseEntity.status(200).body("List접근 완료");
@@ -41,7 +42,7 @@ public class MeetBoardController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody MeetBoardDTO meetBoardDTO){
+    public ResponseEntity<?> register(@ModelAttribute MeetBoardDTO meetBoardDTO){
         meetBoardService.registerMeetBoard(meetBoardDTO);
         return ResponseEntity.status(200).body("작성완료");
     }

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Time;
 import java.time.LocalDateTime;
@@ -32,5 +33,7 @@ public class MeetBoardDTO {
     private LocalDateTime modDate;
 
     private List<String> fileNames;
+
+    private MultipartFile image;
 
 }
