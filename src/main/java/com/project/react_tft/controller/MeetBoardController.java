@@ -68,17 +68,19 @@ public class MeetBoardController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@ModelAttribute MeetBoardDTO meetBoardDTO, @RequestPart("files") List<MultipartFile> files){
-        // 이미지 업로드 처리
-        ResponseEntity<List<ImageResultDTO>> uploadResponse = meetBoardImageController.upload(files);
+    public ResponseEntity<?> register(@ModelAttribute MeetBoardDTO meetBoardDTO, @RequestPart(value = "files", required = false) List<MultipartFile> files){
+        // 파일이 있는 경우에만 업로드 처리
+        if (files != null && !files.isEmpty()) {
+            ResponseEntity<List<ImageResultDTO>> uploadResponse = meetBoardImageController.upload(files);
 
-        if (uploadResponse.getStatusCode().is2xxSuccessful()) {
-            List<ImageResultDTO> uploadedImages = uploadResponse.getBody();
-            // 업로드된 이미지의 파일 이름만 추출하여 meetBoardDTO에 설정
-            List<String> fileNames = uploadedImages.stream()
-                    .map(ImageResultDTO::getFileName)
-                    .collect(Collectors.toList());
-            meetBoardDTO.setFileNames(fileNames); // meetBoardDTO에 파일 이름 리스트 설정
+            if (uploadResponse.getStatusCode().is2xxSuccessful()) {
+                List<ImageResultDTO> uploadedImages = uploadResponse.getBody();
+                // 업로드된 이미지의 파일 이름만 추출하여 meetBoardDTO에 설정
+                List<String> fileNames = uploadedImages.stream()
+                        .map(ImageResultDTO::getFileName)
+                        .collect(Collectors.toList());
+                meetBoardDTO.setFileNames(fileNames); // meetBoardDTO에 파일 이름 리스트 설정
+            }
         }
 
         // 게시글 등록
@@ -86,6 +88,7 @@ public class MeetBoardController {
 
         return ResponseEntity.status(200).body("작성완료");
     }
+
 
 
 
