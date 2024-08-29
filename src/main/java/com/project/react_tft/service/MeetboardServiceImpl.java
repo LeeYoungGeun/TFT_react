@@ -32,9 +32,8 @@ public class MeetboardServiceImpl implements MeetBoardService {
     @Override
     public Long registerMeet(MeetBoardDTO meetBoardDTO) {
         MeetBoard meetBoard = dtoToEntity(meetBoardDTO);
-
-        Long meetId = meetBoardRepository.save(meetBoard).getMeetId();
-        return meetId;
+        meetBoardRepository.save(meetBoard);
+        return meetBoard.getMeetId();
     }
 
     @Override
@@ -116,6 +115,11 @@ public class MeetboardServiceImpl implements MeetBoardService {
                 .total((int)result.getTotalElements())
                 .build();
 
+    }
+
+    @Override
+    public PageResponseDTO<MeetBoardListAllDTO> listWithAll(PageRequestDTO pageRequestDTO) {
+        return null;
     }
 }
 

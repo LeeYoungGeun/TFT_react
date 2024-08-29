@@ -3,6 +3,7 @@ package com.project.react_tft.controller;
 import com.project.react_tft.domain.MeetBoard;
 import com.project.react_tft.domain.Member;
 import com.project.react_tft.dto.*;
+import com.project.react_tft.dto.image.ImageResultDTO;
 import com.project.react_tft.service.MeetBoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -15,10 +16,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Log4j2
 @RestController
@@ -26,6 +29,7 @@ import java.util.List;
 @RequestMapping("/api/meet")
 public class MeetBoardController {
 
+    private final MeetBoardImageController meetBoardImageController;
     @Value("C:\\upload")
     private String uploadPath;
 
@@ -36,7 +40,7 @@ public class MeetBoardController {
 //    public ResponseEntity<PageResponseDTO<MeetBoardDTO>> getList(PageRequestDTO pageRequestDTO) {
     public ResponseEntity<PageResponseDTO<MeetBoardListReplyCountDTO>> getList(PageRequestDTO pageRequestDTO) {
         log.info("리스트에 접근했음");
-        //댓글 페이지 기능 넣은건데 안돼면 주석 지우고 기존에 있던거 쓰면됨
+        //댓글 페이지 기능 넣은건데 안돼면 주석 지우고 사용
 //        PageResponseDTO<MeetBoardDTO> responseDTO = meetBoardService.list(pageRequestDTO);
 
         PageResponseDTO<MeetBoardListReplyCountDTO> responseDTO = meetBoardService.listWithReplyCount(pageRequestDTO);
@@ -51,11 +55,25 @@ public class MeetBoardController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@ModelAttribute MeetBoardDTO meetBoardDTO){
+    public ResponseEntity<?> register(@ModelAttribute MeetBoardDTO meetBoardDTO, @RequestPart("files") List<MultipartFile> files){
+        // 이미지 업로드 처리
+        ResponseEntity<List<ImageResultDTO>> uploadResponse = meetBoardImageController.upload(files);
+
+        if (uploadResponse.getStatusCode().is2xxSuccessful()) {
+            List<ImageResultDTO> uploadedImages = uploadResponse.getBody();
+            // 업로드된 이미지의 파일 이름만 추출하여 meetBoardDTO에 설정
+            List<String> fileNames = uploadedImages.stream()
+                    .map(ImageResultDTO::getFileName)
+                    .collect(Collectors.toList());
+            meetBoardDTO.setFileNames(fileNames); // meetBoardDTO에 파일 이름 리스트 설정
+        }
+
+        // 게시글 등록
         meetBoardService.registerMeet(meetBoardDTO);
 
         return ResponseEntity.status(200).body("작성완료");
     }
+
 
 
     @GetMapping("/modify/{meetNum}")

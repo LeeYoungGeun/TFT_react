@@ -4,8 +4,10 @@ import com.project.react_tft.Repository.search.BoardSearch;
 import com.project.react_tft.domain.MeetBoard;
 import com.project.react_tft.domain.Member;
 import com.project.react_tft.dto.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public interface MeetBoardService {
@@ -28,8 +30,9 @@ public interface MeetBoardService {
     //댓글 숫자처리
     PageResponseDTO<MeetBoardListReplyCountDTO> listWithReplyCount(PageRequestDTO pageRequestDTO);
 
-    default MeetBoard dtoToEntity(MeetBoardDTO meetBoardDTO){
+    PageResponseDTO<MeetBoardListAllDTO> listWithAll(PageRequestDTO pageRequestDTO);
 
+    default MeetBoard dtoToEntity(MeetBoardDTO meetBoardDTO) {
         MeetBoard meetBoard = MeetBoard.builder()
                 .meetId(meetBoardDTO.getMeetId())
                 .meetTitle(meetBoardDTO.getMeetTitle())
@@ -37,17 +40,30 @@ public interface MeetBoardService {
                 .meetWriter(meetBoardDTO.getMeetWriter())
                 .meetTime(meetBoardDTO.getMeetTime())
                 .personnel(meetBoardDTO.getPersonnel())
-
                 .build();
 
-        if(meetBoardDTO.getFileNames() != null){
-            meetBoardDTO.getFileNames().forEach(fileName -> {
+        if (meetBoardDTO.getFileNames() != null) {
+            Long ord = 0L;
+            for (String fileName : meetBoardDTO.getFileNames()) {
                 String[] arr = fileName.split("_");
-                meetBoard.addImage(arr[0], arr[1]);
-            });
+
+                // 배열 길이 확인 및 uuid 설정
+                if (arr.length == 2) {
+                    meetBoard.addImage(arr[0], arr[1]);
+                } else if (arr.length == 1) {
+                    meetBoard.addImage(UUID.randomUUID().toString(), arr[0]); // UUID를 String으로 변환
+                } else {
+                    // 로그 또는 예외 처리
+                    System.err.println("Unexpected file name format: " + fileName);
+                }
+                ord++;
+            }
         }
         return meetBoard;
     }
+
+
+
 
     default MeetBoardDTO entityToDTO(MeetBoard meetBoard) {
 

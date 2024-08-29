@@ -1,8 +1,6 @@
 package com.project.react_tft.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.*;
 
 
@@ -21,7 +19,8 @@ public class MeetBoardImage implements Comparable<MeetBoardImage> {
 
     private int ord;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "meetId", referencedColumnName = "meetId")
     private MeetBoard meetBoard;
 
     @Override

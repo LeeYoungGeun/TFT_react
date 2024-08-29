@@ -1,10 +1,9 @@
 package com.project.react_tft.Repository.search;
 
 import com.project.react_tft.domain.*;
-import com.project.react_tft.dto.BoardListReplyCountDTO;
-import com.project.react_tft.dto.MeetBoardListReplyCountDTO;
-import com.project.react_tft.dto.MeetReplyDTO;
+import com.project.react_tft.dto.*;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +13,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MeetBoardSearchImpl extends QuerydslRepositorySupport implements MeetBoardSearch {
@@ -60,12 +61,12 @@ public class MeetBoardSearchImpl extends QuerydslRepositorySupport implements Me
         // 2. QL 작성...
         JPQLQuery<MeetBoard> query = from(meetBoard);  // select ... from board
 
-        if( ( types != null && types.length > 0) && keyword != null ) {
+        if ((types != null && types.length > 0) && keyword != null) {
             // 검색 조건과 키워드가 있는 경우....
 
             BooleanBuilder booleanBuilder = new BooleanBuilder(); // (
 
-            for(String type: types) {
+            for (String type : types) {
                 switch (type) {
                     case "t":
                         booleanBuilder.or(meetBoard.meetTitle.contains(keyword));  // title like concat('%',keyword,'%')
@@ -95,13 +96,13 @@ public class MeetBoardSearchImpl extends QuerydslRepositorySupport implements Me
 
         // Page<T> 형식으로 반환 : Page<Board>
         // PageImpl을 통해서 반환 : (list - 실제 목록 데이터, pageable, total -전체 개수)
-        return new PageImpl<>(list,pageable,count);
+        return new PageImpl<>(list, pageable, count);
     }
 
     @Override
     public Page<MeetBoardListReplyCountDTO> searchWithMeetReplyCount(String[] types,
-                                                                 String keyword,
-                                                                 Pageable pageable){
+                                                                     String keyword,
+                                                                     Pageable pageable) {
         QMeetBoard meetBoard = QMeetBoard.meetBoard;
         QMeetReply meetReply = QMeetReply.meetReply;
 
@@ -110,12 +111,12 @@ public class MeetBoardSearchImpl extends QuerydslRepositorySupport implements Me
 
         query.groupBy(meetBoard);  // 게시물 당 처리...      // group by
 
-        if( ( types != null && types.length > 0) && keyword != null ) {
+        if ((types != null && types.length > 0) && keyword != null) {
             // 검색 조건과 키워드가 있는 경우....
 
             BooleanBuilder booleanBuilder = new BooleanBuilder(); // (
 
-            for(String type: types) {
+            for (String type : types) {
                 switch (type) {
                     case "t":
                         booleanBuilder.or(meetBoard.meetTitle.contains(keyword));  // title like concat('%',keyword,'%')
@@ -147,7 +148,7 @@ public class MeetBoardSearchImpl extends QuerydslRepositorySupport implements Me
                         meetReply.count().as("meetReplyCount")
                 ));
 
-        this.getQuerydsl().applyPagination(pageable,dtoQuery);
+        this.getQuerydsl().applyPagination(pageable, dtoQuery);
 
         List<MeetBoardListReplyCountDTO> dtoList = dtoQuery.fetch();
 
@@ -156,6 +157,75 @@ public class MeetBoardSearchImpl extends QuerydslRepositorySupport implements Me
         return new PageImpl<>(dtoList, pageable, count);
     }
 
+    @Override
+    public Page<MeetBoardListAllDTO> searchWithAll(String[] types, String keyword, Pageable pageable) {
+        QMeetBoard meetBoard = QMeetBoard.meetBoard;
+        QMeetReply meetReply = QMeetReply.meetReply;
 
+        JPQLQuery<MeetBoard> query = from(meetBoard);
+        query.leftJoin(meetReply).on(meetReply.meetBoard.eq(meetBoard));
+
+       if ((types != null && types.length > 0) && keyword != null) {
+           BooleanBuilder booleanBuilder = new BooleanBuilder();
+
+           for (String type : types) {
+
+               switch (type) {
+                   case "t":
+                       booleanBuilder.or(meetBoard.meetTitle.contains(keyword));
+                       break;
+                   case "c":
+                       booleanBuilder.or(meetBoard.meetContent.contains(keyword));
+                       break;
+                   case "w":
+                       booleanBuilder.or(meetBoard.meetWriter.contains(keyword));
+                       break;
+               }
+           }
+           query.where(booleanBuilder);
+       }
+
+       query.groupBy(meetBoard);
+
+
+
+        getQuerydsl().applyPagination(pageable, query);
+
+        JPQLQuery<Tuple> tupleJPQLQuery = query.select(meetBoard, meetReply.countDistinct());
+
+
+        List<Tuple> tupleList = tupleJPQLQuery.fetch();
+
+        List<MeetBoardListAllDTO> dtoList = tupleList.stream().map(tuple -> {
+
+            MeetBoard meetBoard1 = (MeetBoard) tuple.get(meetBoard);
+            long replyCount = tuple.get(1,Long.class);
+
+            MeetBoardListAllDTO dto = MeetBoardListAllDTO.builder()
+                    .meetId(meetBoard1.getMeetId())
+                    .meetTitle(meetBoard1.getMeetTitle())
+                    .meetWriter(meetBoard1.getMeetWriter())
+                    .regDate(meetBoard1.getRegDate())
+                    .replyCount(replyCount)
+                    .build();
+
+            List<MeetBoardImageDTO> imageDTOS = meetBoard1.getImageSet().stream().sorted()
+                    .map(meetBoardImage -> MeetBoardImageDTO.builder()
+                            .uuid(meetBoardImage.getUuid())
+                            .fileName(meetBoardImage.getFileName())
+                            .ord(meetBoardImage.getOrd())
+                            .build()
+                    ).collect(Collectors.toList());
+
+            dto.setMeetBoardImages(imageDTOS);
+
+            return dto;
+        }).collect(Collectors.toList());
+
+        long totalCount = query.fetchCount();
+
+        return new PageImpl<>(dtoList, pageable, totalCount);
+    }
 }
+
 

@@ -23,40 +23,40 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-
+@RequiredArgsConstructor
 @RestController
 @Log4j2
 public class MeetBoardImageController {
 
     @Value("C:\\upload")
     private String uploadPath;
+    private final MeetBoardRepository meetBoardRepository;
 
     @Operation(summary = "파일 등록", description = "POST 방식으로 파일을 등록합니다.")
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ImageResultDTO> upload(@RequestPart("files") List<MultipartFile> files) {
+    public ResponseEntity<List<ImageResultDTO>> upload(@RequestPart("files") List<MultipartFile> files) {
+
+        List<ImageResultDTO> list = new ArrayList<>();
 
         if (files != null && !files.isEmpty()) {
-            List<ImageResultDTO> list = new ArrayList<>();
-
             files.forEach(multipartFile -> {
                 String originalName = multipartFile.getOriginalFilename();
                 log.info(originalName);
 
                 String uuid = UUID.randomUUID().toString();
-                Path savePath = Paths.get(uploadPath, uuid + "_" + originalName);
+                Path savePath = Paths.get(uploadPath + File.separator + uuid + "_" + originalName);
+
                 boolean image = false;
 
                 try {
                     multipartFile.transferTo(savePath);
 
-                    //이미지 파일의 종류라면
-                    if(Files.probeContentType(savePath).startsWith("image")){
-
+                    // 이미지 파일의 종류라면
+                    if (Files.probeContentType(savePath).startsWith("image")) {
                         image = true;
 
-                        File thumbFile = new File(uploadPath, "s_" + uuid+"_"+ originalName);
-
-                        Thumbnailator.createThumbnail(savePath.toFile(), thumbFile, 200,200); // 썸네일 표기??
+                        File thumbFile = new File(uploadPath, "s_" + uuid + "_" + originalName);
+                        Thumbnailator.createThumbnail(savePath.toFile(), thumbFile, 200, 200);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -67,9 +67,10 @@ public class MeetBoardImageController {
                         .img(image).build()
                 );
             });
-            return list;
+            return ResponseEntity.ok(list);
+        } else {
+            return ResponseEntity.badRequest().body(Collections.emptyList());
         }
-        return null;
     }
 
     @Operation(summary = "GET방식으로 첨부파일 조회")

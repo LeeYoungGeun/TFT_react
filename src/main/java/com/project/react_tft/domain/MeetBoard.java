@@ -34,7 +34,10 @@ public class MeetBoard extends BaseEntity{
    private LocalDateTime meetTime;
 
 
-   @OneToMany(mappedBy = "meetBoard", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
+   @OneToMany(mappedBy = "meetBoard",
+           cascade = {CascadeType.ALL}
+           , fetch = FetchType.LAZY
+           , orphanRemoval = true)
    @Builder.Default
    @BatchSize(size = 20)
    private Set<MeetBoardImage> imageSet = new HashSet<>();
@@ -54,6 +57,8 @@ public class MeetBoard extends BaseEntity{
 
       this.imageSet.clear();
    }
+
+
 
 
 }
