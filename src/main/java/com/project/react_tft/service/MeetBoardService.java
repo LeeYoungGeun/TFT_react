@@ -25,6 +25,9 @@ public interface MeetBoardService {
 
     void remove(Long meetId);
 
+    //댓글 숫자처리
+    PageResponseDTO<MeetBoardListReplyCountDTO> listWithReplyCount(PageRequestDTO pageRequestDTO);
+
     default MeetBoard dtoToEntity(MeetBoardDTO meetBoardDTO){
 
         MeetBoard meetBoard = MeetBoard.builder()

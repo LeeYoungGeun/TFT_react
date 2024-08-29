@@ -2,18 +2,22 @@ package com.project.react_tft.Repository.search;
 
 import com.project.react_tft.domain.*;
 import com.project.react_tft.dto.BoardListReplyCountDTO;
+import com.project.react_tft.dto.MeetBoardListReplyCountDTO;
+import com.project.react_tft.dto.MeetReplyDTO;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class MeetBoardSearchImpl extends QuerydslRepositorySupport implements MeetBoardSearch {
-
 
     public MeetBoardSearchImpl() {
         super(MeetBoard.class);
@@ -94,63 +98,64 @@ public class MeetBoardSearchImpl extends QuerydslRepositorySupport implements Me
         return new PageImpl<>(list,pageable,count);
     }
 
-//    @Override
-//    public Page<BoardListReplyCountDTO> searchWithReplyCount(String[] types,
-//                                                             String keyword,
-//                                                             Pageable pageable){
-//        QBoard board = QBoard.board;
-//        QReply reply = QReply.reply;
-//
-//        JPQLQuery<Board> query = from(board);  // select * from board
-//        query.leftJoin(reply).on(reply.board.eq(board));  // select * from board left join reply on reply.board_bno=board.bno
-//
-//        query.groupBy(board);  // 게시물 당 처리...      // group by
-//
-//        if( ( types != null && types.length > 0) && keyword != null ) {
-//            // 검색 조건과 키워드가 있는 경우....
-//
-//            BooleanBuilder booleanBuilder = new BooleanBuilder(); // (
-//
-//            for(String type: types) {
-//                switch (type) {
-//                    case "t":
-//                        booleanBuilder.or(board.title.contains(keyword));  // title like concat('%',keyword,'%')
-//                        break;
-//                    case "c":
-//                        booleanBuilder.or(board.content.contains(keyword));// content like concat('%',keyword,'%')
-//                        break;
-//                    case "w":
-//                        booleanBuilder.or(board.writer.contains(keyword)); // writer like concat('%',keyword,'%')
-//                        break;
-//                }
-//            }  // for end
-//
-//            query.where(booleanBuilder);  // )
-//
-//        }// if end
-//
-//        // bno > 0
-//        query.where(board.bno.gt(0L));
-//
-//        // Projections.bean() -> JPQL의 결과를 바로 DTO로 처리하는 기능 제공.
-//        // Querydsl도 마찬가지로 이런 기능을 제공
-//        JPQLQuery<BoardListReplyCountDTO> dtoQuery = query.select(Projections.
-//                bean(BoardListReplyCountDTO.class,
-//                        board.bno,
-//                        board.title,
-//                        board.writer,
-//                        board.regDate,
-//                        reply.count().as("replyCount")
-//                ));
-//
-//        this.getQuerydsl().applyPagination(pageable,dtoQuery);
-//
-//        List<BoardListReplyCountDTO> dtoList = dtoQuery.fetch();
-//
-//        Long count = dtoQuery.fetchCount();
-//
-//        return new PageImpl<>(dtoList, pageable, count);
-//    }
+    @Override
+    public Page<MeetBoardListReplyCountDTO> searchWithMeetReplyCount(String[] types,
+                                                                 String keyword,
+                                                                 Pageable pageable){
+        QMeetBoard meetBoard = QMeetBoard.meetBoard;
+        QMeetReply meetReply = QMeetReply.meetReply;
+
+        JPQLQuery<MeetBoard> query = from(meetBoard);  // select * from board
+        query.leftJoin(meetReply).on(meetReply.meetBoard.eq(meetBoard));  // select * from board left join reply on reply.board_bno=board.bno
+
+        query.groupBy(meetBoard);  // 게시물 당 처리...      // group by
+
+        if( ( types != null && types.length > 0) && keyword != null ) {
+            // 검색 조건과 키워드가 있는 경우....
+
+            BooleanBuilder booleanBuilder = new BooleanBuilder(); // (
+
+            for(String type: types) {
+                switch (type) {
+                    case "t":
+                        booleanBuilder.or(meetBoard.meetTitle.contains(keyword));  // title like concat('%',keyword,'%')
+                        break;
+                    case "c":
+                        booleanBuilder.or(meetBoard.meetContent.contains(keyword));// content like concat('%',keyword,'%')
+                        break;
+                    case "w":
+                        booleanBuilder.or(meetBoard.meetWriter.contains(keyword)); // writer like concat('%',keyword,'%')
+                        break;
+                }
+            }  // for end
+
+            query.where(booleanBuilder);  // )
+
+        }// if end
+
+        // bno > 0
+        query.where(meetBoard.meetId.gt(0L));
+
+        // Projections.bean() -> JPQL의 결과를 바로 DTO로 처리하는 기능 제공.
+        // Querydsl도 마찬가지로 이런 기능을 제공
+        JPQLQuery<MeetBoardListReplyCountDTO> dtoQuery = query.select(Projections.
+                bean(MeetBoardListReplyCountDTO.class,
+                        meetBoard.meetId,
+                        meetBoard.meetTitle,
+                        meetBoard.meetWriter,
+                        meetBoard.regDate,
+                        meetReply.count().as("meetReplyCount")
+                ));
+
+        this.getQuerydsl().applyPagination(pageable,dtoQuery);
+
+        List<MeetBoardListReplyCountDTO> dtoList = dtoQuery.fetch();
+
+        Long count = dtoQuery.fetchCount();
+
+        return new PageImpl<>(dtoList, pageable, count);
+    }
+
 
 }
 

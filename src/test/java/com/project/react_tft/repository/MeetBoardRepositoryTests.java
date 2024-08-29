@@ -3,6 +3,7 @@ package com.project.react_tft.repository;
 import com.project.react_tft.Repository.MeetBoardRepository;
 import com.project.react_tft.domain.Board;
 import com.project.react_tft.domain.MeetBoard;
+import com.project.react_tft.dto.MeetBoardListReplyCountDTO;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,4 +46,25 @@ public class MeetBoardRepositoryTests {
         result.getContent().forEach(board -> log.info(board));
 
     }
+
+    @Test
+    public void testSearchReplyCount() {
+
+        String[] types = {"t","w","c"};
+
+        String keyword = "1";
+
+        Pageable pageable = PageRequest.of(0,10, Sort.by("meetId").descending());
+
+        Page<MeetBoardListReplyCountDTO> result = meetBoardRepository.searchWithMeetReplyCount(types,keyword,pageable);
+
+        log.info(result.getTotalPages());
+        log.info(result.getSize());
+        log.info(result.getNumber());
+        log.info(result.hasPrevious() + ":=+ " + result.hasNext());
+        result.getContent().forEach(meetBoard -> log.info(meetBoard));
+    }
+
 }
+
+

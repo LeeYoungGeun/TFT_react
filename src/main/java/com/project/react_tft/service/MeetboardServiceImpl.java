@@ -74,6 +74,8 @@ public class MeetboardServiceImpl implements MeetBoardService {
         }
     }
 
+
+
     @Override
     public void remove(Long meetId) {
         meetBoardRepository.deleteById(meetId);
@@ -99,8 +101,23 @@ public class MeetboardServiceImpl implements MeetBoardService {
                 .build();
     }
 
+    @Override
+    public PageResponseDTO<MeetBoardListReplyCountDTO> listWithReplyCount(PageRequestDTO pageRequestDTO) {
+
+        String[] types = pageRequestDTO.getTypes();
+        String keyword = pageRequestDTO.getKeyword();
+        Pageable pageable = pageRequestDTO.getPageable("meetId");
+
+        Page<MeetBoardListReplyCountDTO> result = meetBoardRepository.searchWithMeetReplyCount(types, keyword, pageable);
+
+        return PageResponseDTO.<MeetBoardListReplyCountDTO>withAll()
+                .pageRequestDTO(pageRequestDTO)
+                .dtoList(result.getContent())
+                .total((int)result.getTotalElements())
+                .build();
 
     }
+}
 
 
 
