@@ -36,16 +36,29 @@ public class MeetBoardController {
     private final MeetBoardService meetBoardService;
 
 
+//    @GetMapping(value = "/list")
+////    public ResponseEntity<PageResponseDTO<MeetBoardDTO>> getList(PageRequestDTO pageRequestDTO) {
+//    public ResponseEntity<PageResponseDTO<MeetBoardListReplyCountDTO>> getList(PageRequestDTO pageRequestDTO) {
+//        log.info("리스트에 접근했음");
+//        //댓글 페이지 기능 넣은건데 안돼면 주석 지우고 사용
+////        PageResponseDTO<MeetBoardDTO> responseDTO = meetBoardService.list(pageRequestDTO);
+//
+//        PageResponseDTO<MeetBoardListReplyCountDTO> responseDTO = meetBoardService.listWithReplyCount(pageRequestDTO);
+//        return ResponseEntity.ok(responseDTO);
+//    }
+
     @GetMapping(value = "/list")
-//    public ResponseEntity<PageResponseDTO<MeetBoardDTO>> getList(PageRequestDTO pageRequestDTO) {
     public ResponseEntity<PageResponseDTO<MeetBoardListReplyCountDTO>> getList(PageRequestDTO pageRequestDTO) {
         log.info("리스트에 접근했음");
-        //댓글 페이지 기능 넣은건데 안돼면 주석 지우고 사용
-//        PageResponseDTO<MeetBoardDTO> responseDTO = meetBoardService.list(pageRequestDTO);
+        log.info("Authorization 헤더: {}", SecurityContextHolder.getContext().getAuthentication());
+        log.info("PageRequestDTO: {}", pageRequestDTO);
 
         PageResponseDTO<MeetBoardListReplyCountDTO> responseDTO = meetBoardService.listWithReplyCount(pageRequestDTO);
+
+        log.info("Response DTO: {}", responseDTO);
         return ResponseEntity.ok(responseDTO);
     }
+
 
     @GetMapping("/register")
     public ResponseEntity<?> getRegister() {
