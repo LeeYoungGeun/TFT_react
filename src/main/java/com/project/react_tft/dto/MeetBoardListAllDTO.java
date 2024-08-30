@@ -14,9 +14,11 @@ import java.util.List;
 @Builder
 public class MeetBoardListAllDTO {
     private Long meetId;
-
+    private int personnel;
+    private LocalDateTime meetTime;
     private String meetTitle;
     private String meetWriter;
+    private String meetContent;
     private LocalDateTime regDate;
     private Long replyCount;
 

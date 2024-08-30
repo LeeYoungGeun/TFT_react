@@ -205,7 +205,10 @@ public class MeetBoardSearchImpl extends QuerydslRepositorySupport implements Me
                     .meetId(meetBoard1.getMeetId())
                     .meetTitle(meetBoard1.getMeetTitle())
                     .meetWriter(meetBoard1.getMeetWriter())
+                    .meetContent(meetBoard1.getMeetContent())
                     .regDate(meetBoard1.getRegDate())
+                    .personnel(meetBoard1.getPersonnel())
+                    .meetTime(meetBoard1.getMeetTime())
                     .replyCount(replyCount)
                     .build();
 

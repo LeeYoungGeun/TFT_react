@@ -119,8 +119,19 @@ public class MeetboardServiceImpl implements MeetBoardService {
 
     @Override
     public PageResponseDTO<MeetBoardListAllDTO> listWithAll(PageRequestDTO pageRequestDTO) {
-        return null;
+        String[] types = pageRequestDTO.getTypes();
+        String keyword = pageRequestDTO.getKeyword();
+        Pageable pageable = pageRequestDTO.getPageable("meetId");
+
+        Page<MeetBoardListAllDTO> result = meetBoardRepository.searchWithAll(types, keyword, pageable);
+
+        return PageResponseDTO.<MeetBoardListAllDTO>withAll()
+                .pageRequestDTO(pageRequestDTO)
+                .dtoList(result.getContent())
+                .total((int)result.getTotalElements())
+                .build();
     }
+
 }
 
 

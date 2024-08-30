@@ -48,12 +48,12 @@ public class MeetBoardController {
 //    }
 
     @GetMapping(value = "/list")
-    public ResponseEntity<PageResponseDTO<MeetBoardListReplyCountDTO>> getList(PageRequestDTO pageRequestDTO) {
+    public ResponseEntity<PageResponseDTO<MeetBoardListAllDTO>> getList(PageRequestDTO pageRequestDTO) {
         log.info("리스트에 접근했음");
         log.info("Authorization 헤더: {}", SecurityContextHolder.getContext().getAuthentication());
         log.info("PageRequestDTO: {}", pageRequestDTO);
 
-        PageResponseDTO<MeetBoardListReplyCountDTO> responseDTO = meetBoardService.listWithReplyCount(pageRequestDTO);
+        PageResponseDTO<MeetBoardListAllDTO> responseDTO = meetBoardService.listWithAll(pageRequestDTO);
 
         log.info("Response DTO: {}", responseDTO);
         return ResponseEntity.ok(responseDTO);
