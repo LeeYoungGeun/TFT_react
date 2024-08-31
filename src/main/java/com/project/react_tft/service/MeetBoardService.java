@@ -42,22 +42,11 @@ public interface MeetBoardService {
                 .personnel(meetBoardDTO.getPersonnel())
                 .build();
 
-        if (meetBoardDTO.getFileNames() != null) {
-            Long ord = 0L;
-            for (String fileName : meetBoardDTO.getFileNames()) {
+        if(meetBoardDTO.getFileNames() != null){
+            meetBoardDTO.getFileNames().forEach(fileName -> {
                 String[] arr = fileName.split("_");
-
-                // 배열 길이 확인 및 uuid 설정
-                if (arr.length == 2) {
-                    meetBoard.addImage(arr[0], arr[1]);
-                } else if (arr.length == 1) {
-                    meetBoard.addImage(UUID.randomUUID().toString(), arr[0]); // UUID를 String으로 변환
-                } else {
-                    // 로그 또는 예외 처리
-                    System.err.println("Unexpected file name format: " + fileName);
-                }
-                ord++;
-            }
+                meetBoard.addImage(arr[0], arr[1]);
+            });
         }
         return meetBoard;
     }

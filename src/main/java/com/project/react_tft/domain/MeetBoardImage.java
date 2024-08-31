@@ -19,8 +19,7 @@ public class MeetBoardImage implements Comparable<MeetBoardImage> {
 
     private int ord;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "meetId", referencedColumnName = "meetId")
+    @ManyToOne
     private MeetBoard meetBoard;
 
     @Override
