@@ -64,7 +64,7 @@ public class ReviewController {
             throw new MemberService.MemberMidExistException();
         }
         else {
-            reviewDTO.setMid(authentication.getName());
+            reviewDTO.setMnick(authentication.getName());
         }
 
         log.info("register review2: {}", reviewDTO);
@@ -91,7 +91,7 @@ public class ReviewController {
                         .movie_id(review.getMovie().getMovie_id())
                         .review_star(review.getReview_star())
                         .review_text(review.getReview_text())
-                        .mid(review.getMember().getMid())
+                        .mnick(review.getMember().getMnick())
                         .build()
         ).collect(Collectors.toList());
 

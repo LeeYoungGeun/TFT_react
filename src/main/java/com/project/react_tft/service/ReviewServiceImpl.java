@@ -35,7 +35,7 @@ public class ReviewServiceImpl implements ReviewService {
     public Long register(ReviewDTO reviewDTO) {
         log.info("reviewDTO" + reviewDTO);
 
-        Member member = memberRepository.findById(reviewDTO.getMid())
+        Member member = memberRepository.findById(reviewDTO.getMnick())
                 .orElseThrow(() -> new RuntimeException("Member not found"));
         Movie movie = movieRepository.findById(reviewDTO.getMovie_id())
                 .orElseThrow(() -> new RuntimeException("Movie not found"));
