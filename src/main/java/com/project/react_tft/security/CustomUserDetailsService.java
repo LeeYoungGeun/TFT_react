@@ -50,6 +50,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 member.getMid(),
                 member.getMpw(),
                 member.getMemail(),
+                member.getMnick(),
                 member.isDel(),
                 false,  //소셜로 로그인 처리하지 않는 상황
                 member.getRoleSet()
