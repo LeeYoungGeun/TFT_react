@@ -66,6 +66,7 @@ public class CustomSocialLoginSuccessHandler implements AuthenticationSuccessHan
         response.addCookie(refreshTokenCookie);
 
         // 클라이언트로 리다이렉트
+
         response.sendRedirect("http://localhost:3000/");
     }
 }
