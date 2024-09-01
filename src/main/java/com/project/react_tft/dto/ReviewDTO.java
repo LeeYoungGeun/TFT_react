@@ -20,7 +20,9 @@ public class ReviewDTO {
     //영화 id
     private Long movie_id;
     //맴버 id
-    private String mid;
+
+
+    private String mnick;
     //리뷰내용
     private String review_text;
     //별점
